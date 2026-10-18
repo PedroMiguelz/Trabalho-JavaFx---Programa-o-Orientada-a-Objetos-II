@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="TOP_CENTER" prefHeight="497.0" prefWidth="240.0" spacing="15.0" style="-fx-background-color: #6B6F77;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.unicentro.poo.projetopoo.Controller.Telas.TelaCadastroController">
+   <children>
+      <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="98.0" text="Cadastrar" textFill="WHITE">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <VBox alignment="TOP_CENTER">
+         <children>
+            <TabPane prefHeight="416.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+               <tabs>
+                  <Tab text="Clientes">
+                     <content>
+                        <fx:include source="../TabCadastro/TabCadastroCliente.fxml"/>
+                     </content>
+                  </Tab>
+                  <Tab text="Animais">
+                     <content>
+                       <fx:include source="../TabCadastro/TabCadastroAnimal.fxml"/>
+                     </content>
+                  </Tab>
+                  <Tab text="Consultas">
+                     <content>
+                        <fx:include source="../TabCadastro/TabCadastroConsulta.fxml"/>
+                     </content>
+                  </Tab>
+                  <Tab text="Veterinários">
+                     <content>
+                        <fx:include source="../TabCadastro/TabCadastroVeterinario.fxml"/>
+                     </content>
+                  </Tab>
+               </tabs>
+               <VBox.margin>
+                  <Insets top="35.0" />
+               </VBox.margin>
+            </TabPane>
+         </children>
+      </VBox>
+   </children>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+</VBox>

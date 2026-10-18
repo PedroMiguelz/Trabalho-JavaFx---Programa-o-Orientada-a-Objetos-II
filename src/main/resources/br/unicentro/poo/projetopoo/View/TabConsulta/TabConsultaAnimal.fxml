@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="670.0" prefWidth="240.0" style="-fx-background-color: #ffff;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.unicentro.poo.projetopoo.Controller.TabConsulta.TabConsultaAnimalController">
+   <children>
+      <VBox spacing="10.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+         <children>
+            <Label style="-fx-font-weight: bold;" text="Consultar Animal:" />
+            <TextField fx:id="txtConsultarIdAnimal" promptText="Digite o id" />
+            <TextField fx:id="txtConsultarNomeAnimal" promptText="Ou digite o Nome" />
+            <Button fx:id="btnConsultarAnimal" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#btnConsultarAnimalOnAction" style="-fx-background-color: #00A8FF; -fx-text-fill: white;" text="Buscar" />
+
+            <Separator prefWidth="200.0" />
+
+            <GridPane hgap="10.0" vgap="8.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="70.0" />
+                  <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="130.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="28.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="28.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="28.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="28.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="28.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="28.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Label text="Nome:" />
+                  <TextField fx:id="txtResultadoNomeAnimal" editable="false" GridPane.columnIndex="1" />
+
+                  <Label text="Espécie:" GridPane.rowIndex="1" />
+                  <TextField fx:id="txtResultadoEspecieAnimal" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                  <Label text="Raça:" GridPane.rowIndex="2" />
+                  <TextField fx:id="txtResultadoRacaAnimal" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                  <Label text="Sexo:" GridPane.rowIndex="3" />
+                  <TextField fx:id="txtResultadoSexoAnimal" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                  <Label text="Cliente:" GridPane.rowIndex="4" />
+                  <TextField fx:id="txtResultadoClienteAnimal" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+                  <Label text="Id:" GridPane.rowIndex="5" />
+                  <TextField fx:id="txtResultadoIdAnimal" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+               </children>
+            </GridPane>
+         </children>
+      </VBox>
+      <HBox alignment="CENTER" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0">
+         <children>
+            <Button fx:id="btnLimparAnimal" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#btnLimparAnimalOnAction" style="-fx-background-color: #808080; -fx-text-fill: white;" text="Limpar" HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>

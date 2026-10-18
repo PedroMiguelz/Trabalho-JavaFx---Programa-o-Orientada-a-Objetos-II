@@ -1,0 +1,52 @@
+CREATE DATABASE petshop_db
+
+CREATE TABLE cliente (
+    cpf CHAR(11) NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    telefone CHAR(15) NOT NULL,
+    CONSTRAINT pk_cliente PRIMARY KEY (cpf),
+    CONSTRAINT chk_cpf_cliente CHECK (cpf ~ '^[0-9]{11}$'),
+    CONSTRAINT chk_cliente_telefone CHECK (telefone ~ '^[0-9()+ -]{8,15}$'),
+    CONSTRAINT chk_cliente_nome_nao_vazio CHECK (CHAR_LENGTH(TRIM(nome)) > 0)
+);
+
+CREATE TABLE veterinario (
+    crmv VARCHAR(20) NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    dataEntrada DATE NOT NULL DEFAULT CURRENT_DATE,
+    especializacao VARCHAR(100) NULL,
+    telefone CHAR(15) NULL,
+    CONSTRAINT pk_veterinario PRIMARY KEY (crmv),
+    CONSTRAINT chk_veterinario_nome_nao_vazio CHECK (CHAR_LENGTH(TRIM(nome)) > 0),
+    CONSTRAINT chk_telefone_veterinario CHECK (telefone IS NULL OR telefone ~ '^[0-9()+ -]{8,15}$')
+);
+
+CREATE TABLE animal (
+    idAnimal SERIAL NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    raca VARCHAR(80) NULL,
+    sexo CHAR(1) NULL,
+    especie VARCHAR(60) NOT NULL,
+    cpf_cliente CHAR(11) NOT NULL,
+    CONSTRAINT pk_animal PRIMARY KEY (idAnimal),
+    CONSTRAINT fk_animal_cliente FOREIGN KEY (cpf_cliente) REFERENCES cliente (cpf)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT chk_animal_nome_nao_vazio CHECK (CHAR_LENGTH(TRIM(nome)) > 0),
+    CONSTRAINT chk_animal_especie_nao_vazia CHECK (CHAR_LENGTH(TRIM(especie)) > 0),
+    CONSTRAINT chk_animal_sexo_valido CHECK (sexo IS NULL OR sexo IN ('M', 'F'))
+);
+
+CREATE TABLE consulta (
+    idConsulta SERIAL NOT NULL,
+    data DATE NOT NULL,
+    hora TIME NOT NULL,
+    valor DECIMAL(10,2) NOT NULL,
+    idAnimal INT NOT NULL,
+    crmv_veterinario VARCHAR(20) NOT NULL,
+    CONSTRAINT pk_consulta PRIMARY KEY (idConsulta),
+    CONSTRAINT fk_consulta_animal FOREIGN KEY (idAnimal) REFERENCES animal (idAnimal)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_consulta_veterinario FOREIGN KEY (crmv_veterinario) REFERENCES veterinario (crmv)
+        ON DELETE NO ACTION ON UPDATE CASCADE,
+    CONSTRAINT chk_consulta_valor_positivo CHECK (valor >= 0)
+);

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="TOP_CENTER" spacing="15.0" style="-fx-background-color: #6B6F77;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.unicentro.poo.projetopoo.Controller.Telas.TelaAtualizarController">
+   <children>
+      <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="80.0" text="Excluir" textFill="WHITE">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <AnchorPane prefHeight="670.0" prefWidth="240.0">
+         <children>
+            <TabPane fx:id="tabPaneExcluir" prefHeight="670.0" prefWidth="240.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <tabs>
+                  <Tab text="Cliente">
+                     <content>
+                        <fx:include source="../TabExcluir/TabExcluirCliente.fxml" />
+                     </content>
+                  </Tab>
+                  <Tab text="Animal">
+                     <content>
+                        <fx:include source="../TabExcluir/TabExcluirAnimal.fxml" />
+                     </content>
+                  </Tab>
+                  <Tab text="Consulta">
+                     <content>
+                        <fx:include source="../TabExcluir/TabExcluirConsulta.fxml" />
+                     </content>
+                  </Tab>
+                  <Tab text="Veterinário">
+                     <content>
+                        <fx:include source="../TabExcluir/TabExcluirVeterinario.fxml" />
+                     </content>
+                  </Tab>
+               </tabs>
+            </TabPane>
+         </children>
+      </AnchorPane>
+   </children>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+</VBox>
