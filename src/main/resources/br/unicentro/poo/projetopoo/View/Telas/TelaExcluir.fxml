@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_CENTER" spacing="15.0" style="-fx-background-color: #6B6F77;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.unicentro.poo.projetopoo.Controller.Telas.TelaAtualizarController">
+<VBox alignment="TOP_CENTER" spacing="15.0" style="-fx-background-color: #6B6F77;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.unicentro.poo.projetopoo.Controller.Telas.TelaExcluirController">
    <children>
       <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="80.0" text="Excluir" textFill="WHITE">
          <font>

@@ -11,8 +11,8 @@ module br.unicentro.poo.projetopoo {
     opens br.unicentro.poo.projetopoo.Controller.TabExcluir to javafx.fxml;
 
     opens br.unicentro.poo.projetopoo to javafx.fxml;
-    opens br.unicentro.poo.projetopoo.Controller to javafx.fxml;
     exports br.unicentro.poo.projetopoo;
+
     opens br.unicentro.poo.projetopoo.Controller.Telas to javafx.fxml;
     opens br.unicentro.poo.projetopoo.Controller.Entidades to javafx.fxml;
 }
