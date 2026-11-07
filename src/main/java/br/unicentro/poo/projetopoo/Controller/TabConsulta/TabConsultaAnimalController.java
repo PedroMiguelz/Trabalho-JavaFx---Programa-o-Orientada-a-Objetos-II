@@ -43,6 +43,7 @@ public class TabConsultaAnimalController {
     @FXML
     private TextField txtResultadoSexoAnimal;
 
+
     @FXML
     void btnConsultarAnimalOnAction(ActionEvent event) {
         String buscaId = txtConsultarIdAnimal.getText().trim();

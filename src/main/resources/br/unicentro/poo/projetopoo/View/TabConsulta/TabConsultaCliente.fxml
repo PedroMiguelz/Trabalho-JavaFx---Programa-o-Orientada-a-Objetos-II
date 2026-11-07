@@ -40,7 +40,7 @@
                   <Label text="Telefone:" GridPane.rowIndex="2" />
 
                   <TextField fx:id="txtResultadoNomeCliente" editable="false" GridPane.columnIndex="1" />
-                  <TextField fx:id="txtResultadoCpfCliente" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <TextField fx:id="txtResultadoCpfCliente" editable="false" promptText="Automático" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <TextField fx:id="txtResultadoTelefoneCliente" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                </children>
             </GridPane>

@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AnimalDao {
+public class  AnimalDao {
 
     public void inserir(Animal a) throws SQLException {
         String sql = "INSERT INTO animal (nome, especie, raca, sexo, cpf_cliente) VALUES (?, ?, ?, ?, ?)";

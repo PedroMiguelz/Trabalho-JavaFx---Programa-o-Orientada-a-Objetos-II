@@ -38,7 +38,7 @@
                </rowConstraints>
                <children>
                   <Label text="CRMV:" />
-                  <TextField fx:id="txtResultadoCrmvVeterinario" editable="false" GridPane.columnIndex="1" />
+                  <TextField fx:id="txtResultadoCrmvVeterinario" editable="false" promptText="Automático" GridPane.columnIndex="1" />
 
                   <Label text="Nome:" GridPane.rowIndex="1" />
                   <TextField fx:id="txtResultadoNomeVeterinario" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />

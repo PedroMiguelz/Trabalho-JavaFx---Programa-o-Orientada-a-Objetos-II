@@ -36,19 +36,10 @@ public class TabAtualizarClienteController {
 
     @FXML
     private void btnBuscarClienteOnAction(ActionEvent event) {
-        String buscaCpf = txtBuscarCpfCliente.getText().trim();
-        String buscaNome = txtBuscarNomeCliente.getText().trim();
-
-        String termoBusca;
-
-        if (!buscaCpf.isEmpty()) {
-            termoBusca = buscaCpf;
-        } else {
-            termoBusca = buscaNome;
-        }
+        String termoBusca = txtBuscarCpfCliente.getText().trim();
 
         if (termoBusca.isEmpty()) {
-            Alertas.mostrarAviso("Digite um cpf ou nome");
+            Alertas.mostrarAviso("Digite um CPF.");
             return;
         }
 
@@ -62,18 +53,16 @@ public class TabAtualizarClienteController {
                 return;
             }
 
-
             Cliente c = clientes.get(0);
             txtAtualizarCpfCliente.setText(c.getCpf());
             txtAtualizarNomeCliente.setText(c.getNome());
             txtAtualizarTelefoneCliente.setText(c.getTelefone());
 
-            Alertas.mostrarSucesso("Cliente encontrada!");
+            Alertas.mostrarSucesso("Cliente encontrado!");
 
         } catch (Exception e) {
             Alertas.mostrarErro("Erro ao buscar cliente: " + e.getMessage());
         }
-
     }
 
     @FXML
@@ -111,6 +100,5 @@ public class TabAtualizarClienteController {
         txtAtualizarNomeCliente.clear();
         txtAtualizarTelefoneCliente.clear();
         txtBuscarCpfCliente.clear();
-        txtBuscarNomeCliente.clear();
     }
 }
