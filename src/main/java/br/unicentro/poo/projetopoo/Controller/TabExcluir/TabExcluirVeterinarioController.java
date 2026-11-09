@@ -1,7 +1,8 @@
 package br.unicentro.poo.projetopoo.Controller.TabExcluir;
 
-import br.unicentro.poo.projetopoo.Controller.Entidades.VeterinarioController;
 import br.unicentro.poo.projetopoo.Model.Veterinario;
+import br.unicentro.poo.projetopoo.Service.ServiceException;
+import br.unicentro.poo.projetopoo.Service.VeterinarioService;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,6 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class TabExcluirVeterinarioController {
+
+    private final VeterinarioService veterinarioService = new VeterinarioService();
 
     private Veterinario veterinarioAtual;
 
@@ -59,8 +62,7 @@ public class TabExcluirVeterinarioController {
         }
 
         try {
-            VeterinarioController veterinarioController = new VeterinarioController();
-            List<Veterinario> veterinarios = veterinarioController.buscarVeterinarios(termoBusca);
+            List<Veterinario> veterinarios = veterinarioService.listarVeterinario(termoBusca);
 
             Veterinario v = veterinarios.stream()
                     .filter(vet -> (!buscaCrmv.isEmpty() && vet.getCrmv().equalsIgnoreCase(buscaCrmv)) ||
@@ -75,6 +77,7 @@ public class TabExcluirVeterinarioController {
             }
 
             veterinarioAtual = v;
+
             txtResultadoCrmvVeterinario.setText(v.getCrmv());
             txtResultadoNomeVeterinario.setText(v.getNome());
             dpResultadoDataVeterinario.setValue(v.getDataEntrada());
@@ -83,7 +86,7 @@ public class TabExcluirVeterinarioController {
 
             Alertas.mostrarSucesso("Veterinário encontrado!");
 
-        } catch (Exception e) {
+        } catch (ServiceException e) {
             Alertas.mostrarErro("Erro ao buscar veterinário: " + e.getMessage());
         }
     }
@@ -103,8 +106,7 @@ public class TabExcluirVeterinarioController {
         Optional<ButtonType> resultado = confirmacao.showAndWait();
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             try {
-                VeterinarioController veterinarioController = new VeterinarioController();
-                veterinarioController.excluirVeterinario(veterinarioAtual.getCrmv());
+                veterinarioService.excluirVeterinario(veterinarioAtual);
 
                 Alertas.mostrarSucesso("Veterinário excluído com sucesso!");
                 limparCampos();

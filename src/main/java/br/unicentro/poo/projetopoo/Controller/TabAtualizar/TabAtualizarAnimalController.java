@@ -1,11 +1,12 @@
 package br.unicentro.poo.projetopoo.Controller.TabAtualizar;
 
-import br.unicentro.poo.projetopoo.Controller.Entidades.AnimalController;
 import br.unicentro.poo.projetopoo.Model.Animal;
+import br.unicentro.poo.projetopoo.Model.Cliente;
+import br.unicentro.poo.projetopoo.Service.AnimalService;
+import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
@@ -15,6 +16,8 @@ import java.util.List;
 public class TabAtualizarAnimalController {
 
     private Animal animal;
+
+    private final AnimalService animalService = new AnimalService();
 
     @FXML
     private Button btnBuscarAnimal;
@@ -52,7 +55,6 @@ public class TabAtualizarAnimalController {
         String buscaNome = txtBuscarNomeAnimal.getText().trim();
 
         try{
-            AnimalController animalController = new AnimalController();
 
             if(!buscaIdAnimal.isEmpty()){
                 int id;
@@ -62,7 +64,8 @@ public class TabAtualizarAnimalController {
                     Alertas.mostrarErro("Informe um id válido");
                     return;
                 }
-                Animal a = animalController.buscarAnimalId(id);
+
+                Animal a = animalService.listarAnimalId(id);
 
                 if(a == null){
                     Alertas.mostrarAviso("Nenhum animal encontrado");
@@ -75,10 +78,10 @@ public class TabAtualizarAnimalController {
 
             }
             else if(!buscaNome.isEmpty()){
-                List<Animal> animais = animalController.buscarAnimais(buscaNome);
+                List<Animal> animais = animalService.listarAnimal(buscaNome);
 
-                if(animais.isEmpty()){
-                    Alertas.mostrarAviso("Nenhum animal encontrado");
+                if(animais.isEmpty()) {
+                    Alertas.mostrarAviso("Nenhum animal encontrado!");
                     limparCampos();
                     return;
                 }
@@ -86,14 +89,12 @@ public class TabAtualizarAnimalController {
                 Alertas.mostrarSucesso("Animal encontrada!");
                 Animal a = animais.get(0);
                 preencherCampos(a);
-
-
             }
             else {
                 Alertas.mostrarAviso("Insira o id ou nome do animal");
             }
 
-        } catch (Exception e) {
+        } catch (ServiceException e) {
             Alertas.mostrarErro("Erro ao buscar animal: " + e.getMessage());
         }
     }
@@ -104,22 +105,31 @@ public class TabAtualizarAnimalController {
         String especie = txtAtualizarEspecieAnimal.getText().trim();
         String raca = txtAtualizarRacaAnimal.getText().trim();
         String sexo = cbAtualizarSexoAnimal.getValue();
-        String cliente = txtAtualizarClienteAnimal.getText().trim();
+        String cpfCliente = txtAtualizarClienteAnimal.getText().trim();
 
         if(animal == null){
             Alertas.mostrarAviso( "Nenhum animal selecionado para atualizar. Faça a busca primeiro.");
             return;
         }
 
+        Cliente cliente = new Cliente();
+        cliente.setCpf(cpfCliente);
+
+        Animal animalAtualizado = new Animal();
+        animalAtualizado.setNome(nome);
+        animalAtualizado.setEspecie(especie);
+        animalAtualizado.setRaca(raca);
+        animalAtualizado.setSexo(sexo);
+        animalAtualizado.setCliente(cliente);
+
         try{
-            AnimalController animalController = new AnimalController();
-            animalController.atualizarAnimal(animal.getId(),nome,especie,raca,sexo,cliente);
+           animalService.atualizarAnimal(animalAtualizado);
 
             Alertas.mostrarSucesso("Animal atualizado com sucesso!");
             limparCampos();
 
 
-        } catch (Exception e) {
+        } catch (ServiceException e) {
             Alertas.mostrarErro("Erro ao atualizar animal: " + e.getMessage());
         }
     }
@@ -131,6 +141,7 @@ public class TabAtualizarAnimalController {
         txtAtualizarRacaAnimal.clear();
         cbAtualizarSexoAnimal.setValue(null);
         txtAtualizarClienteAnimal.clear();
+        txtAtualizarIdAnimal.clear();
     }
 
     private void preencherCampos(Animal a){

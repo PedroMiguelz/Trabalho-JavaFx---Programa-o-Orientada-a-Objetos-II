@@ -1,11 +1,11 @@
 package br.unicentro.poo.projetopoo.Controller.TabAtualizar;
 
-import br.unicentro.poo.projetopoo.Controller.Entidades.ClienteController;
 import br.unicentro.poo.projetopoo.Model.Cliente;
+import br.unicentro.poo.projetopoo.Service.ClienteService;
+import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
@@ -13,6 +13,9 @@ import java.util.List;
 
 public class TabAtualizarClienteController {
 
+    private final ClienteService clienteService = new ClienteService();
+
+    private Cliente clienteAtual;
     @FXML
     private Button btnBuscarCliente;
 
@@ -32,9 +35,6 @@ public class TabAtualizarClienteController {
     private TextField txtBuscarCpfCliente;
 
     @FXML
-    private TextField txtBuscarNomeCliente;
-
-    @FXML
     private void btnBuscarClienteOnAction(ActionEvent event) {
         String termoBusca = txtBuscarCpfCliente.getText().trim();
 
@@ -44,23 +44,23 @@ public class TabAtualizarClienteController {
         }
 
         try {
-            ClienteController controller = new ClienteController();
-            List<Cliente> clientes = controller.buscarClientes(termoBusca);
+            List<Cliente> clientes = clienteService.listarCliente(termoBusca);
 
-            if (clientes.isEmpty()) {
-                Alertas.mostrarAviso("Nenhum cliente encontrado.");
-                limparCampos();
+            if(clientes.isEmpty()){
+                Alertas.mostrarAviso("Nenhum cliente encontrado!");
                 return;
             }
 
             Cliente c = clientes.get(0);
+            clienteAtual = c;
+
             txtAtualizarCpfCliente.setText(c.getCpf());
             txtAtualizarNomeCliente.setText(c.getNome());
             txtAtualizarTelefoneCliente.setText(c.getTelefone());
 
             Alertas.mostrarSucesso("Cliente encontrado!");
 
-        } catch (Exception e) {
+        } catch (ServiceException e) {
             Alertas.mostrarErro("Erro ao buscar cliente: " + e.getMessage());
         }
     }
@@ -83,14 +83,17 @@ public class TabAtualizarClienteController {
         }
 
         try {
-            ClienteController controller = new ClienteController();
-            controller.atualizarCliente(cpf, nome, telefone);
+            clienteAtual.setNome(nome);
+            clienteAtual.setTelefone(telefone);
+
+            clienteService.atualizarCliente(clienteAtual);
+
 
             Alertas.mostrarSucesso("Cliente atualizado com sucesso!");
 
             limparCampos();
 
-        } catch (Exception e) {
+        } catch (ServiceException e) {
             Alertas.mostrarErro("Erro ao atualizar cliente: " + e.getMessage());
         }
     }

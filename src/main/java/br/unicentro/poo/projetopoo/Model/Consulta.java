@@ -18,8 +18,7 @@ public class Consulta {
     public LocalDate getData() { return data; }
 
     public void setData(LocalDate data) { this.data = data; }
-    //public LocalTime getHora() { return hora; }
-    //public void setHora(LocalTime hora) { this.hora = hora; }
+
     public BigDecimal getValor() { return valor; }
 
     public void setValor(BigDecimal valor) { this.valor = valor; }

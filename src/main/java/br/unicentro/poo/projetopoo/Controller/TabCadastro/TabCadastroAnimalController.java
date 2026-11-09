@@ -1,14 +1,18 @@
 package br.unicentro.poo.projetopoo.Controller.TabCadastro;
 
-import br.unicentro.poo.projetopoo.Controller.Entidades.AnimalController;
+import br.unicentro.poo.projetopoo.Model.Animal;
+import br.unicentro.poo.projetopoo.Model.Cliente;
+import br.unicentro.poo.projetopoo.Service.AnimalService;
+import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import java.sql.SQLException;
 
 public class TabCadastroAnimalController {
+
+    private final AnimalService animalService = new AnimalService();
 
     @FXML
     private Button btnAceitarAnimal;
@@ -71,20 +75,25 @@ public class TabCadastroAnimalController {
             return;
         }
 
+        Cliente cliente = new Cliente();
+        cliente.setCpf(cpfDono);
+
+        Animal animal = new Animal();
+        animal.setNome(nome);
+        animal.setRaca(raca);
+        animal.setSexo(sexo);
+        animal.setEspecie(especie);
+        animal.setCliente(cliente);
+
         try{
-            AnimalController animalController = new AnimalController();
-            animalController.cadastrarAnimal(nome, especie, raca, sexo, cpfDono);
+            animalService.cadastrarAnimal(animal);
 
             Alertas.mostrarSucesso("Sucesso ao cadastrar o animal");
 
             limparCampos();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            Alertas.mostrarErro("Erro ao cadastrar animal: " + e.getMessage());;
-        } catch (Exception e) {
-            e.printStackTrace();
-            Alertas.mostrarErro("Erro ao processar animal: " + e.getMessage());
+        } catch (ServiceException e) {
+            Alertas.mostrarErro(e.getMessage());
         }
     }
 

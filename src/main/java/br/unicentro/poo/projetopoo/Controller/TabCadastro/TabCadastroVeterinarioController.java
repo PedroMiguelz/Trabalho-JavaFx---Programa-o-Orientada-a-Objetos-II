@@ -1,18 +1,20 @@
 package br.unicentro.poo.projetopoo.Controller.TabCadastro;
 
-import br.unicentro.poo.projetopoo.Controller.Entidades.VeterinarioController;
+import br.unicentro.poo.projetopoo.Model.Veterinario;
+import br.unicentro.poo.projetopoo.Service.ServiceException;
+import br.unicentro.poo.projetopoo.Service.VeterinarioService;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class TabCadastroVeterinarioController {
+
+    private final VeterinarioService veterinarioService = new VeterinarioService();
 
     @FXML
     private Button btnAceitarVeterinario;
@@ -73,18 +75,22 @@ public class TabCadastroVeterinarioController {
             return;
         }
 
+        Veterinario veterinario = new Veterinario();
+        veterinario.setNome(nome);
+        veterinario.setCrmv(crmv);
+        veterinario.setEspecializacao(especializacao);
+        veterinario.setTelefone(telefone);
+        veterinario.setDataEntrada(dataEntrada);
+
         try{
-            VeterinarioController vetController = new VeterinarioController();
-            vetController.cadastrarVeterinario(crmv, nome, dataEntrada, especializacao, telefone);
+            veterinarioService.cadastrarVeterinario(veterinario);
 
             Alertas.mostrarSucesso("Sucesso ao cadastrar veterinário");
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-           Alertas.mostrarErro("Erro ao cadastrar veterinário: " + e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            Alertas.mostrarErro("Erro ao processar veterinário: " + e.getMessage());
+
+
+        } catch (ServiceException e) {
+            Alertas.mostrarErro("Erro ao cadastrar veterinário: " + e.getMessage());
         }
     }
 
@@ -97,6 +103,14 @@ public class TabCadastroVeterinarioController {
         dpDataEntradaVeterinario.setValue(null);
 
         Alertas.mostrarAviso("Operação cancelada");
+    }
+
+    private void limparCampos(){
+        txtNomeVeterinario.clear();
+        txtCrmvVeterinario.clear();
+        txtEspecializacaoVeterinario.clear();
+        txtTelefoneVeterinario.clear();
+        dpDataEntradaVeterinario.setValue(null);
     }
 
 }

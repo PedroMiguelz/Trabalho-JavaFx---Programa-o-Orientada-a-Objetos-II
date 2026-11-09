@@ -1,7 +1,8 @@
 package br.unicentro.poo.projetopoo.Controller.TabExcluir;
 
-import br.unicentro.poo.projetopoo.Controller.Entidades.AnimalController;
 import br.unicentro.poo.projetopoo.Model.Animal;
+import br.unicentro.poo.projetopoo.Service.AnimalService;
+import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 public class TabExcluirAnimalController {
 
+   private final AnimalService animalService = new AnimalService();
     private Animal animalAtual;
 
     @FXML
@@ -53,7 +55,6 @@ public class TabExcluirAnimalController {
         String buscaNome = txtExcluirNomeAnimal.getText().trim();
 
         try {
-            AnimalController animalController = new AnimalController();
             Animal a = null;
 
             if (!buscaIdStr.isEmpty()) {
@@ -61,18 +62,18 @@ public class TabExcluirAnimalController {
                 try {
                     id = Integer.parseInt(buscaIdStr);
                 } catch (NumberFormatException e) {
-                    Alertas.mostrarErro("O ID deve ser um número válido.");
+                    Alertas.mostrarErro("O Id deve ser um número válido.");
                     txtExcluirIdAnimal.requestFocus();
                     return;
                 }
-                a = animalController.buscarAnimalId(id);
+                a = animalService.listarAnimalId(id);
             } else if (!buscaNome.isEmpty()) {
-                List<Animal> animais = animalController.buscarAnimais(buscaNome);
+                List<Animal> animais = animalService.listarAnimal(buscaNome);
                 if (!animais.isEmpty()) {
                     a = animais.get(0);
                 }
             } else {
-                Alertas.mostrarAviso("Insira o ID ou o Nome do animal para buscar");
+                Alertas.mostrarAviso("Insira o Id ou o nome do animal para buscar");
                 txtExcluirIdAnimal.requestFocus();
                 return;
             }
@@ -89,6 +90,7 @@ public class TabExcluirAnimalController {
             txtResultadoEspecieAnimal.setText(a.getEspecie());
             txtResultadoRacaAnimal.setText(a.getRaca());
             txtResultadoSexoAnimal.setText(a.getSexo());
+
             if (a.getCliente() != null) {
                 txtResultadoClienteAnimal.setText(a.getCliente().getCpf());
             } else {
@@ -97,7 +99,7 @@ public class TabExcluirAnimalController {
 
             Alertas.mostrarSucesso("Animal encontrado!");
 
-        } catch (Exception e) {
+        } catch (ServiceException e) {
             Alertas.mostrarErro("Erro ao buscar animal: " + e.getMessage());
         }
     }
@@ -117,13 +119,12 @@ public class TabExcluirAnimalController {
         Optional<ButtonType> resultado = confirmacao.showAndWait();
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             try {
-                AnimalController animalController = new AnimalController();
-                animalController.excluirAnimal(animalAtual.getId());
+                animalService.excluirAnimal(animalAtual);
 
                 Alertas.mostrarSucesso("Animal excluído com sucesso!");
                 limparCampos();
 
-            } catch (Exception e) {
+            } catch (ServiceException e) {
                 Alertas.mostrarErro("Erro ao excluir animal: " + e.getMessage());
             }
         }

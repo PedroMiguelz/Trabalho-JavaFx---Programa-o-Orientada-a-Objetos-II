@@ -1,21 +1,25 @@
 package br.unicentro.poo.projetopoo.Controller.TabAtualizar;
 
-import br.unicentro.poo.projetopoo.Controller.Entidades.ConsultaController;
+import br.unicentro.poo.projetopoo.Model.Animal;
 import br.unicentro.poo.projetopoo.Model.Consulta;
+import br.unicentro.poo.projetopoo.Model.Veterinario;
+import br.unicentro.poo.projetopoo.Service.ConsultaService;
+import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
-
 import java.math.BigDecimal;
-import java.util.List;
+
 
 public class TabAtualizarConsultaController {
 
+    private final ConsultaService consultaService = new ConsultaService();
+
     private Consulta consultaAtual;
+
     @FXML
     private Button btnBuscarConsulta;
 
@@ -54,19 +58,13 @@ public class TabAtualizarConsultaController {
         try {
             id = Integer.parseInt(buscaIdConsulta);
         } catch (NumberFormatException e) {
-            Alertas.mostrarErro("Informe um ID válido");
+            Alertas.mostrarErro("Informe um Id válido");
             txtBuscarIdConsulta.requestFocus();
             return;
         }
 
         try {
-            ConsultaController consultaController = new ConsultaController();
-            List<Consulta> consultas = consultaController.buscarConsultas(String.valueOf(id));
-
-            Consulta c = consultas.stream()
-                    .filter(consulta -> consulta.getId() == id)
-                    .findFirst()
-                    .orElse(null);
+            Consulta c = consultaService.listarConsulta(id).orElse(null);
 
             if (c == null) {
                 Alertas.mostrarAviso("Nenhuma consulta encontrada");
@@ -102,11 +100,6 @@ public class TabAtualizarConsultaController {
             String idAnimalStr = txtAtualizarIdAnimal.getText().trim();
             String crmvVet = txtAtualizarCrmvConsulta.getText().trim();
 
-            if (data == null) {
-                Alertas.mostrarAviso("A data da consulta é obrigatória!");
-                return;
-            }
-
             BigDecimal valor;
             try {
                 valor = new BigDecimal(valorStr);
@@ -119,17 +112,31 @@ public class TabAtualizarConsultaController {
             try {
                 idAnimal = Integer.parseInt(idAnimalStr);
             } catch (NumberFormatException e) {
-                Alertas.mostrarErro("ID do animal inválido!");
+                Alertas.mostrarErro("Id do animal inválido!");
                 return;
             }
 
-            ConsultaController consultaController = new ConsultaController();
-            consultaController.atualizarConsulta(idConsulta, data, valor, idAnimal, crmvVet);
+            Animal animal = new Animal();
+            animal.setId(idAnimal);
+
+            Veterinario veterinario = new Veterinario();
+            veterinario.setCrmv(crmvVet);
+
+            Consulta consulta = new Consulta();
+            consulta.setId(idConsulta);
+            consulta.setData(data);
+            consulta.setValor(valor);
+            consulta.setAnimal(animal);
+            consulta.setVeterinario(veterinario);
+
+            consultaService.atualizarConsulta(consulta);
 
             Alertas.mostrarSucesso("Consulta atualizada com sucesso!");
             limparCampos();
 
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e){
+            Alertas.mostrarAviso(e.getMessage());
+        } catch (ServiceException e) {
             Alertas.mostrarErro("Erro ao atualizar consulta: " + e.getMessage());
         }
     }

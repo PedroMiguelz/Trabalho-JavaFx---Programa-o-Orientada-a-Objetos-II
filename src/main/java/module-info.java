@@ -14,5 +14,5 @@ module br.unicentro.poo.projetopoo {
     exports br.unicentro.poo.projetopoo;
 
     opens br.unicentro.poo.projetopoo.Controller.Telas to javafx.fxml;
-    opens br.unicentro.poo.projetopoo.Controller.Entidades to javafx.fxml;
+    opens br.unicentro.poo.projetopoo.Service to javafx.fxml;
 }

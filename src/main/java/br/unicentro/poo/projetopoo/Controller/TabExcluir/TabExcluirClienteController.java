@@ -1,7 +1,8 @@
 package br.unicentro.poo.projetopoo.Controller.TabExcluir;
 
-import br.unicentro.poo.projetopoo.Controller.Entidades.ClienteController;
 import br.unicentro.poo.projetopoo.Model.Cliente;
+import br.unicentro.poo.projetopoo.Service.ClienteService;
+import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 public class TabExcluirClienteController {
 
+    private final ClienteService clienteService = new ClienteService();
     private Cliente clienteAtual;
 
     @FXML
@@ -52,8 +54,7 @@ public class TabExcluirClienteController {
         }
 
         try {
-            ClienteController clienteController = new ClienteController();
-            List<Cliente> clientes = clienteController.buscarClientes(termoBusca);
+            List<Cliente> clientes = clienteService.listarCliente(termoBusca);
 
             Cliente c = clientes.stream()
                     .filter(cli -> (!buscaCpf.isEmpty() && cli.getCpf().equalsIgnoreCase(buscaCpf)) ||
@@ -74,7 +75,7 @@ public class TabExcluirClienteController {
 
             Alertas.mostrarSucesso("Cliente encontrado!");
 
-        } catch (Exception e) {
+        } catch (ServiceException e) {
             Alertas.mostrarErro("Erro ao buscar cliente: " + e.getMessage());
         }
     }
@@ -94,14 +95,15 @@ public class TabExcluirClienteController {
         Optional<ButtonType> resultado = confirmacao.showAndWait();
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             try {
-                ClienteController clienteController = new ClienteController();
-                clienteController.excluirCliente(clienteAtual.getCpf());
+                clienteService.excluirCliente(clienteAtual);
 
                 Alertas.mostrarSucesso("Cliente excluído com sucesso!");
                 limparCampos();
 
-            } catch (Exception e) {
+            } catch (ServiceException e) {
                 Alertas.mostrarErro("Erro ao excluir cliente: " + e.getMessage());
+            } catch (IllegalArgumentException e) {
+                Alertas.mostrarAviso(e.getMessage());
             }
         }
     }

@@ -1,7 +1,8 @@
 package br.unicentro.poo.projetopoo.Controller.TabConsulta;
 
-import br.unicentro.poo.projetopoo.Controller.Entidades.ConsultaController;
 import br.unicentro.poo.projetopoo.Model.Consulta;
+import br.unicentro.poo.projetopoo.Service.ConsultaService;
+import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,22 +11,18 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 
 import javafx.stage.FileChooser;
 import java.io.File;
 import java.io.IOException;
-import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.text.NumberFormat;
-import java.util.List;
 import java.util.Locale;
 
 public class TabConsultaConsultaController {
 
+    private final ConsultaService consultaService = new ConsultaService();
     @FXML
     private Button btnConsultarConsulta;
 
@@ -67,7 +64,7 @@ public class TabConsultaConsultaController {
         String buscaIdConsulta = txtConsultarIdConsulta.getText().trim();
 
         if (buscaIdConsulta.isEmpty()) {
-            Alertas.mostrarAviso("Insira o ID da consulta");
+            Alertas.mostrarAviso("Insira o ID da consulta!");
             txtConsultarIdConsulta.requestFocus();
             return;
         }
@@ -76,22 +73,16 @@ public class TabConsultaConsultaController {
         try {
             id = Integer.parseInt(buscaIdConsulta);
         } catch (NumberFormatException e) {
-            Alertas.mostrarErro("Informe um ID válido (número inteiro)");
+            Alertas.mostrarAviso("Informe um ID válido!");
             txtConsultarIdConsulta.requestFocus();
             return;
         }
 
         try {
-            ConsultaController consultaController = new ConsultaController();
-            List<Consulta> consultas = consultaController.buscarConsultas(String.valueOf(id));
+            Consulta c = consultaService.listarConsulta(id).orElse(null);
 
-            Consulta c = consultas.stream()
-                    .filter(consulta -> consulta.getId() == id)
-                    .findFirst()
-                    .orElse(null);
-
-            if (c == null) {
-                Alertas.mostrarAviso("Nenhuma consulta encontrada");
+            if(c == null) {
+                Alertas.mostrarAviso("Nenhuma consulta encontrada!");
                 limparCampos();
                 return;
             }
@@ -100,12 +91,14 @@ public class TabConsultaConsultaController {
             dpResultadoDataConsulta.setValue(c.getData());
             txtResultadoValorConsulta.setText(c.getValor() != null ? c.getValor().toString() : "");
             txtResultadoIdAnimal.setText(String.valueOf(c.getAnimal().getId()));
-            txtResultadoCrmvConsulta.setText(c.getVeterinario().getCrmv());
+            txtResultadoCrmvConsulta.setText(String.valueOf(c.getVeterinario().getCrmv()));
 
             Alertas.mostrarSucesso("Consulta encontrada!");
 
-        } catch (Exception e) {
-            Alertas.mostrarErro("Erro ao consultar consulta: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            Alertas.mostrarAviso("Id da consulta inválido!");
+        } catch (ServiceException e){
+            Alertas.mostrarErro("Erro ao consultar a consulta: " + e.getMessage());
         }
     }
 
@@ -194,16 +187,15 @@ public class TabConsultaConsultaController {
     @FXML
     void btnCalcularTotalOnAction(){
         try {
-            ConsultaController consultaController = new ConsultaController();
-            BigDecimal total = consultaController.calcularTotalFaturado(
-                    dpInicioFaturamento.getValue(), dpFimFaturamento.getValue());
+            BigDecimal total = consultaService.calcularTotalFaturado(dpInicioFaturamento.getValue(), dpFimFaturamento.getValue());
 
-            NumberFormat moeda = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+            NumberFormat moeda = NumberFormat.getCurrencyInstance(new Locale("pt", "br"));
+
             lblTotalFaturado.setText(moeda.format(total));
 
         } catch (IllegalArgumentException e) {
             Alertas.mostrarAviso(e.getMessage());
-        } catch (SQLException e) {
+        } catch (ServiceException e) {
             Alertas.mostrarErro("Erro ao calcular faturamento: " + e.getMessage());
         }
     }

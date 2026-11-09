@@ -1,11 +1,10 @@
 package br.unicentro.poo.projetopoo.Controller.TabAtualizar;
 
-import br.unicentro.poo.projetopoo.Controller.Entidades.VeterinarioController;
 import br.unicentro.poo.projetopoo.Model.Veterinario;
+import br.unicentro.poo.projetopoo.Service.VeterinarioService;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
@@ -16,7 +15,10 @@ import java.util.List;
 
 public class TabAtualizarVeterinarioController {
 
+    private final VeterinarioService veterinarioService = new VeterinarioService();
+
     private Veterinario veterinarioAtual;
+
     @FXML
     private Button btnBuscarVeterinario;
 
@@ -52,8 +54,7 @@ public class TabAtualizarVeterinarioController {
         }
 
         try {
-            VeterinarioController veterinarioController = new VeterinarioController();
-            List<Veterinario> veterinarios = veterinarioController.buscarVeterinarios(buscaCrmv);
+            List<Veterinario> veterinarios = veterinarioService.listarVeterinario(buscaCrmv);
 
             Veterinario v = veterinarios.stream()
                     .filter(vet -> vet.getCrmv().equalsIgnoreCase(buscaCrmv))
@@ -88,7 +89,7 @@ public class TabAtualizarVeterinarioController {
         }
 
         try {
-            String crmvFixo = veterinarioAtual.getCrmv(); // O CRMV não muda pois é a chave primária
+            String crmvFixo = veterinarioAtual.getCrmv();
             String nome = txtAtualizarNomeVeterinario.getText().trim();
             LocalDate dataEntrada = dpAtualizarDataVeterinario.getValue();
             String especializacao = txtAtualizarEspecializacaoVeterinario.getText().trim();
@@ -104,8 +105,12 @@ public class TabAtualizarVeterinarioController {
                 return;
             }
 
-            VeterinarioController veterinarioController = new VeterinarioController();
-            veterinarioController.atualizarVeterinario(crmvFixo, nome, dataEntrada, especializacao, telefone);
+            veterinarioAtual.setNome(nome);
+            veterinarioAtual.setDataEntrada(dataEntrada);
+            veterinarioAtual.setEspecializacao(especializacao);
+            veterinarioAtual.setTelefone(telefone);
+
+            veterinarioService.atualizarVeterinario(veterinarioAtual);
 
             Alertas.mostrarSucesso("Veterinário atualizado com sucesso!");
             limparCampos();

@@ -1,11 +1,10 @@
 package br.unicentro.poo.projetopoo.Controller.TabConsulta;
 
-import br.unicentro.poo.projetopoo.Controller.Entidades.VeterinarioController;
 import br.unicentro.poo.projetopoo.Model.Veterinario;
+import br.unicentro.poo.projetopoo.Service.VeterinarioService;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
@@ -14,6 +13,7 @@ import java.util.List;
 
 public class TabConsultaVeterinarioController {
 
+    private final VeterinarioService veterinarioService = new VeterinarioService();
     @FXML
     private Button btnConsultarVeterinario;
 
@@ -53,18 +53,17 @@ public class TabConsultaVeterinarioController {
         }
 
         try {
-            VeterinarioController veterinarioController = new VeterinarioController();
             Veterinario v = null;
 
             if (!buscaCrmv.isEmpty()) {
-                List<Veterinario> veterinarios = veterinarioController.buscarVeterinarios(buscaCrmv);
+                List<Veterinario> veterinarios = veterinarioService.listarVeterinario(buscaCrmv);
                 v = veterinarios.stream()
                         .filter(vet -> vet.getCrmv().equalsIgnoreCase(buscaCrmv))
                         .findFirst()
                         .orElse(null);
             }
-            else if (!buscaNome.isEmpty()) {
-                List<Veterinario> veterinarios = veterinarioController.buscarVeterinarios(buscaNome);
+            else {
+                List<Veterinario> veterinarios = veterinarioService.listarVeterinario(buscaNome);
                 v = veterinarios.stream()
                         .filter(vet -> vet.getNome().toLowerCase().contains(buscaNome.toLowerCase()))
                         .findFirst()

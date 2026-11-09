@@ -1,15 +1,18 @@
 package br.unicentro.poo.projetopoo.Controller.TabCadastro;
 
-import br.unicentro.poo.projetopoo.Controller.Entidades.ClienteController;
+import br.unicentro.poo.projetopoo.Model.Cliente;
+import br.unicentro.poo.projetopoo.Service.ClienteService;
+import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Util.Alertas;
-import br.unicentro.poo.projetopoo.Util.ValidadorUtil; // <--- Import do ValidadorUtil
+import br.unicentro.poo.projetopoo.Util.ValidadorUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
 public class TabCadastroClienteController {
+
+    private final ClienteService clienteService = new ClienteService();
 
     @FXML
     private Button btnAceitarCliente;
@@ -45,9 +48,7 @@ public class TabCadastroClienteController {
         }
 
         if(!ValidadorUtil.isCpfValido(cpfCliente)){
-            Alertas.mostrarAviso("O formato do cpf é inválido");
-            txtCpfCliente.requestFocus();
-            return;
+            Alertas.mostrarAviso("Digite um formato de CPF válido!");
         }
 
         if(telefoneCliente.isEmpty()){
@@ -57,21 +58,25 @@ public class TabCadastroClienteController {
         }
 
         if(!ValidadorUtil.isTelefoneValido(telefoneCliente)){
-            Alertas.mostrarAviso("Digite um formato de telefone válido");
-            txtTelefoneCliente.requestFocus();
-            return;
+            Alertas.mostrarAviso("Digite o um formato válido de telefone");
         }
 
+
+
+        Cliente cliente = new Cliente();
+        cliente.setNome(nomeCliente);
+        cliente.setCpf(cpfCliente);
+        cliente.setTelefone(telefoneCliente);
+
         try{
-            ClienteController clienteController = new ClienteController();
-            clienteController.cadastrarCliente(cpfCliente, nomeCliente, telefoneCliente);
+            clienteService.cadastrarCliente(cliente);
 
             Alertas.mostrarSucesso("Sucesso ao cadastrar cliente");
 
             limparCampos();
 
-        } catch(Exception e){
-            e.printStackTrace();
+        }
+        catch(ServiceException e){
             Alertas.mostrarErro("Erro ao cadastrar cliente: " + e.getMessage());
         }
     }

@@ -16,10 +16,10 @@ public class ClienteDao {
             ps.executeUpdate();
         }
     }
-
+    //, COUNT(a.idAnimal) AS qtd
     public List<Cliente> listar(String busca) throws SQLException {
         String sql = """
-                SELECT c.cpf, c.nome, c.telefone, COUNT(a.idAnimal) AS qtd
+                SELECT c.cpf, c.nome, c.telefone
                 FROM cliente c LEFT JOIN animal a ON a.cpf_cliente = c.cpf
                 WHERE c.nome ILIKE ? OR c.cpf LIKE ?
                 GROUP BY c.cpf ORDER BY c.nome""";
@@ -33,7 +33,6 @@ public class ClienteDao {
                     c.setCpf(rs.getString("cpf"));
                     c.setNome(rs.getString("nome"));
                     c.setTelefone(rs.getString("telefone").trim());
-                    c.setQtdAnimais(rs.getInt("qtd"));
                     lista.add(c);
                 }
             }

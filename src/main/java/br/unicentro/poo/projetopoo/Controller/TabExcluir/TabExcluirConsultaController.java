@@ -1,7 +1,8 @@
 package br.unicentro.poo.projetopoo.Controller.TabExcluir;
 
-import br.unicentro.poo.projetopoo.Controller.Entidades.ConsultaController;
 import br.unicentro.poo.projetopoo.Model.Consulta;
+import br.unicentro.poo.projetopoo.Service.ConsultaService;
+import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,10 +12,11 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 
-import java.util.List;
 import java.util.Optional;
 
 public class TabExcluirConsultaController {
+
+    private final ConsultaService consultaService = new ConsultaService();
 
     private Consulta consultaAtual;
 
@@ -62,13 +64,7 @@ public class TabExcluirConsultaController {
         }
 
         try {
-            ConsultaController consultaController = new ConsultaController();
-            List<Consulta> consultas = consultaController.buscarConsultas(String.valueOf(id));
-
-            consultaAtual = consultas.stream()
-                    .filter(c -> c.getId() == id)
-                    .findFirst()
-                    .orElse(null);
+            consultaAtual = consultaService.listarConsulta(id).orElse(null);
 
             if (consultaAtual == null) {
                 Alertas.mostrarAviso("Nenhuma consulta encontrada com o ID: " + id);
@@ -94,7 +90,9 @@ public class TabExcluirConsultaController {
 
             Alertas.mostrarSucesso( "Consulta encontrada!");
 
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            Alertas.mostrarAviso(e.getMessage());
+        } catch (ServiceException e) {
             Alertas.mostrarErro("Erro ao buscar consulta: " + e.getMessage());
         }
     }
@@ -114,13 +112,14 @@ public class TabExcluirConsultaController {
         Optional<ButtonType> resultado = confirmacao.showAndWait();
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             try {
-                ConsultaController consultaController = new ConsultaController();
-                consultaController.excluirConsulta(consultaAtual.getId());
+                consultaService.excluirConsulta(consultaAtual);
 
                 Alertas.mostrarSucesso("Consulta excluída com sucesso!");
                 limparCampos();
 
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e){
+                Alertas.mostrarAviso(e.getMessage());
+            } catch (ServiceException e) {
                 Alertas.mostrarErro("Erro ao excluir consulta: " + e.getMessage());
             }
         }

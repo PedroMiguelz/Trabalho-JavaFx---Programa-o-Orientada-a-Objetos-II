@@ -1,17 +1,18 @@
 package br.unicentro.poo.projetopoo.Controller.TabConsulta;
 
-import br.unicentro.poo.projetopoo.Controller.Entidades.AnimalController;
 import br.unicentro.poo.projetopoo.Model.Animal;
+import br.unicentro.poo.projetopoo.Service.AnimalService;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
 import java.util.List;
 
 public class TabConsultaAnimalController {
+
+    private final AnimalService animalService = new AnimalService();
 
     @FXML
     private Button btnLimparAnimal;
@@ -50,7 +51,6 @@ public class TabConsultaAnimalController {
         String buscaNome = txtConsultarNomeAnimal.getText().trim();
 
         try {
-            AnimalController animalController = new AnimalController();
             Animal a = null;
 
             if (!buscaId.isEmpty()) {
@@ -61,10 +61,10 @@ public class TabConsultaAnimalController {
                     Alertas.mostrarErro("O ID deve ser um número inteiro válido.");
                     return;
                 }
-                a = animalController.buscarAnimalId(id);
+                a = animalService.listarAnimalId(id);
             }
             else if (!buscaNome.isEmpty()) {
-                List<Animal> animais = animalController.buscarAnimais(buscaNome);
+                List<Animal> animais = animalService.listarAnimal(buscaNome);
                 if (!animais.isEmpty()) {
                     a = animais.get(0);
                 }
@@ -85,6 +85,7 @@ public class TabConsultaAnimalController {
             txtResultadoEspecieAnimal.setText(a.getEspecie());
             txtResultadoRacaAnimal.setText(a.getRaca());
             txtResultadoSexoAnimal.setText(a.getSexo());
+
             if (a.getCliente() != null) {
                 txtResultadoClienteAnimal.setText(a.getCliente().getCpf());
             } else {
