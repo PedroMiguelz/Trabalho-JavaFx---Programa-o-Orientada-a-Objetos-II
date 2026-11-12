@@ -27,11 +27,11 @@ public class ConsultaService {
     }
 
     public void atualizarConsulta(Consulta consulta) throws  ServiceException{
+        validar(consulta);
+
         if(consulta.getId() <= 0) {
             throw new IllegalArgumentException("Id da consulta inválido para atualização!");
         }
-
-       validar(consulta);
 
         try {
             consultaDao.atualizar(consulta);
@@ -54,7 +54,7 @@ public class ConsultaService {
     }
 
     public void excluirConsulta(Consulta consulta) throws ServiceException {
-        if(consulta.getId() <= 0){
+        if(consulta == null || consulta.getId() <= 0){
             throw new IllegalArgumentException("Id da consulta inválido para exclusão!");
         }
 
@@ -108,5 +108,20 @@ public class ConsultaService {
             throw new IllegalArgumentException("O CRMV do veterinário é obrigatório!");
         }
     }
+    public int contarPorVeterinario(String crmv) throws ServiceException {
+        try {
+            return consultaDao.contarPorVeterinario(crmv);
+        } catch (SQLException e) {
+            throw new ServiceException("Erro ao verificar consultas do veterinário!", e);
+        }
+    }
 
+    /*eyshla*/
+    public int contarPorAnimal(int idAnimal) throws ServiceException {
+        try {
+            return consultaDao.contarPorAnimal(idAnimal);
+        } catch (SQLException e) {
+            throw new ServiceException("Erro ao verificar consultas do animal!", e);
+        }
+    }
 }

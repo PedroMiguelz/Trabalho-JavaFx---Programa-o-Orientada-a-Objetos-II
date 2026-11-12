@@ -15,7 +15,7 @@ public class ClienteService {
     }
 
     public void cadastrarCliente(Cliente cliente) throws ServiceException{
-        validar(cliente);
+       validar(cliente);
 
         try {
             clienteDao.inserir(cliente);
@@ -25,7 +25,7 @@ public class ClienteService {
     }
 
     public void atualizarCliente(Cliente cliente) throws ServiceException{
-        validar(cliente);
+       validar(cliente);
 
         try {
             clienteDao.atualizar(cliente);
@@ -47,7 +47,7 @@ public class ClienteService {
     }
 
     public void excluirCliente(Cliente cliente) throws ServiceException {
-        if (cliente == null || cliente.getCpf().trim().isEmpty() || cliente.getCpf() == null) {
+        if (cliente == null ||  cliente.getCpf() == null || cliente.getCpf().trim().isEmpty()) {
             throw new IllegalArgumentException("CPF inválido para exclusão!");
         }
         try {
@@ -60,26 +60,6 @@ public class ClienteService {
     public void validar(Cliente cliente){
         if(cliente == null){
             throw new IllegalArgumentException("Cliente invalido!");
-        }
-
-        if(cliente.getNome() == null || cliente.getNome().trim().isEmpty()){
-            throw new IllegalArgumentException("Informe o nome do cliente!");
-        }
-
-        if(cliente.getCpf() == null || cliente.getCpf().isEmpty()){
-            throw new IllegalArgumentException("Informe o cpf do cliente!");
-        }
-
-        if(cliente.getTelefone() == null || cliente.getTelefone().trim().isEmpty()){
-            throw new IllegalArgumentException("Informe o telefone do cliente!");
-        }
-
-        if(!ValidadorUtil.isTelefoneValido(cliente.getTelefone())){
-            throw new IllegalArgumentException("Digite um formato de elefone válido!");
-        }
-
-        if(!ValidadorUtil.isCpfValido(cliente.getCpf())){
-            throw new IllegalArgumentException("Digite um formato de CPF válido!");
         }
     }
 

@@ -2,6 +2,7 @@ package br.unicentro.poo.projetopoo.Controller.TabExcluir;
 
 import br.unicentro.poo.projetopoo.Model.Veterinario;
 import br.unicentro.poo.projetopoo.Service.ServiceException;
+import br.unicentro.poo.projetopoo.Service.ServiceFactory;
 import br.unicentro.poo.projetopoo.Service.VeterinarioService;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
@@ -11,13 +12,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
+import br.unicentro.poo.projetopoo.Facade.VeterinarioFacade;
 
 import java.util.List;
 import java.util.Optional;
 
 public class TabExcluirVeterinarioController {
 
-    private final VeterinarioService veterinarioService = new VeterinarioService();
+    private final VeterinarioService veterinarioService = ServiceFactory.criarVeterinarioService();
+    private final VeterinarioFacade veterinarioFacade = new VeterinarioFacade();
 
     private Veterinario veterinarioAtual;
 
@@ -87,14 +90,14 @@ public class TabExcluirVeterinarioController {
             Alertas.mostrarSucesso("Veterinário encontrado!");
 
         } catch (ServiceException e) {
-            Alertas.mostrarErro("Erro ao buscar veterinário: " + e.getMessage());
+            Alertas.mostrarErro(e.getMessage());
         }
     }
 
     @FXML
     void btnExcluirVeterinarioOnAction(ActionEvent event) {
         if (veterinarioAtual == null) {
-            Alertas.mostrarAviso("Nenhum veterinário selecionado para excluir. Faça a busca primeiro.");
+            Alertas.mostrarAviso("Nenhum veterinário selecionado para excluir. Faça a busca primeiro!");
             return;
         }
 
@@ -106,13 +109,15 @@ public class TabExcluirVeterinarioController {
         Optional<ButtonType> resultado = confirmacao.showAndWait();
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             try {
-                veterinarioService.excluirVeterinario(veterinarioAtual);
-
+                veterinarioFacade.excluirVeterinario(veterinarioAtual);
                 Alertas.mostrarSucesso("Veterinário excluído com sucesso!");
                 limparCampos();
 
-            } catch (Exception e) {
-                Alertas.mostrarErro("Erro ao excluir veterinário: " + e.getMessage());
+            } catch (IllegalArgumentException e){
+                Alertas.mostrarAviso(e.getMessage());
+            }
+            catch (ServiceException e) {
+                Alertas.mostrarErro(e.getMessage());
             }
         }
     }

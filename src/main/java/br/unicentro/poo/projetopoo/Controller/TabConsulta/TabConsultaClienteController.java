@@ -2,8 +2,10 @@ package br.unicentro.poo.projetopoo.Controller.TabConsulta;
 
 import br.unicentro.poo.projetopoo.Model.Cliente;
 import br.unicentro.poo.projetopoo.Service.ClienteService;
+import br.unicentro.poo.projetopoo.Service.ServiceFactory;
 import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Util.Alertas;
+import br.unicentro.poo.projetopoo.Util.ValidadorUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -13,7 +15,7 @@ import java.util.List;
 
 public class TabConsultaClienteController {
 
-    private final ClienteService clienteService = new ClienteService();
+    private final ClienteService clienteService = ServiceFactory.criarClienteService();
 
     @FXML
     private Button btnConsultarCliente;
@@ -43,15 +45,21 @@ public class TabConsultaClienteController {
 
         String termoBusca;
 
+        if (buscaCpf.isEmpty() && buscaNome.isEmpty()) {
+            Alertas.mostrarAviso("Digite um CPF ou Nome para consultar!");
+            return;
+        }
+
+        if (!buscaCpf.isEmpty() && !ValidadorUtil.isCpfValido(buscaCpf)) {
+            Alertas.mostrarAviso("Digite um CPF válido!");
+            txtConsultarCpfCliente.requestFocus();
+            return;
+        }
+
         if (!buscaCpf.isEmpty()) {
             termoBusca = buscaCpf;
         } else {
             termoBusca = buscaNome;
-        }
-
-        if (termoBusca.isEmpty()) {
-            Alertas.mostrarAviso("Digite um CPF ou Nome para consultar");
-            return;
         }
 
         try {
@@ -70,8 +78,11 @@ public class TabConsultaClienteController {
 
             Alertas.mostrarSucesso("Cliente encontrado!");
 
-        } catch (ServiceException e) {
-            Alertas.mostrarErro("Erro ao consultar cliente: " + e.getMessage());
+        } catch (IllegalArgumentException e){
+            Alertas.mostrarAviso(e.getMessage());
+        }
+        catch (ServiceException e) {
+            Alertas.mostrarErro(e.getMessage());
         }
     }
 

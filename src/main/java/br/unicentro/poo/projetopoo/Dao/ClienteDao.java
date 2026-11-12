@@ -16,7 +16,7 @@ public class ClienteDao {
             ps.executeUpdate();
         }
     }
-    //, COUNT(a.idAnimal) AS qtd
+
     public List<Cliente> listar(String busca) throws SQLException {
         String sql = """
                 SELECT c.cpf, c.nome, c.telefone
@@ -29,11 +29,11 @@ public class ClienteDao {
             ps.setString(2, "%" + busca + "%");
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Cliente c = new Cliente();
-                    c.setCpf(rs.getString("cpf"));
-                    c.setNome(rs.getString("nome"));
-                    c.setTelefone(rs.getString("telefone").trim());
-                    lista.add(c);
+                    lista.add(Cliente.builder()
+                            .cpf(rs.getString("cpf"))
+                            .nome(rs.getString("nome"))
+                            .telefone(rs.getString("telefone").trim())
+                            .build());
                 }
             }
         }

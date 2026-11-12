@@ -4,6 +4,7 @@ import br.unicentro.poo.projetopoo.Model.Animal;
 import br.unicentro.poo.projetopoo.Model.Consulta;
 import br.unicentro.poo.projetopoo.Model.Veterinario;
 import br.unicentro.poo.projetopoo.Service.ConsultaService;
+import br.unicentro.poo.projetopoo.Service.ServiceFactory;
 import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
@@ -11,13 +12,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
+import br.unicentro.poo.projetopoo.Facade.ConsultaFacade;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class TabCadastroConsultaController {
 
-    private final ConsultaService consultaService = new ConsultaService();
+    private final ConsultaFacade consultaFacade = new ConsultaFacade(); /*mudança para o facade funcionar*/
 
     @FXML
     private Button btnAceitarConsulta;
@@ -86,24 +88,25 @@ public class TabCadastroConsultaController {
             return;
         }
 
-        Animal animal = new Animal();
-        animal.setId(idAnimal);
-
-        Veterinario veterinario = new Veterinario();
-        veterinario.setCrmv(crmvVet);
-
-        Consulta consulta = new Consulta();
-        consulta.setData(data);
-        consulta.setValor(valorConsulta);
-        consulta.setAnimal(animal);
-        consulta.setVeterinario(veterinario);
+        Consulta consulta = Consulta.builder()
+                .data(data)
+                .valor(valorConsulta)
+                .animal(Animal.builder().id(idAnimal).build())
+                .veterinario(Veterinario.builder().crmv(crmvVet).build())
+                .build();
 
         try {
-            consultaService.cadastrarConsulta(consulta);
+            consultaFacade.cadastrarConsulta(consulta);
             limparCampos();
             Alertas.mostrarSucesso("Sucesso ao cadastrar consulta");
-        } catch (ServiceException e){
-            Alertas.mostrarErro("Erro ao cadastrar consulta: " + e.getMessage());
+
+            limparCampos();
+
+        } catch (IllegalArgumentException e) {
+            Alertas.mostrarAviso(e.getMessage());
+        }
+        catch (ServiceException e){
+            Alertas.mostrarErro(e.getMessage());
         }
     }
 

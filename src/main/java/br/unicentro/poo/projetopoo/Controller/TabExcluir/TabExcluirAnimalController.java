@@ -2,6 +2,7 @@ package br.unicentro.poo.projetopoo.Controller.TabExcluir;
 
 import br.unicentro.poo.projetopoo.Model.Animal;
 import br.unicentro.poo.projetopoo.Service.AnimalService;
+import br.unicentro.poo.projetopoo.Service.ServiceFactory;
 import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
@@ -10,13 +11,15 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
+import br.unicentro.poo.projetopoo.Facade.AnimalFacade;
 
 import java.util.List;
 import java.util.Optional;
 
 public class TabExcluirAnimalController {
 
-   private final AnimalService animalService = new AnimalService();
+   private final AnimalService animalService = ServiceFactory.criarAnimalService();
+    private final AnimalFacade animalFacade = new AnimalFacade();
     private Animal animalAtual;
 
     @FXML
@@ -62,7 +65,7 @@ public class TabExcluirAnimalController {
                 try {
                     id = Integer.parseInt(buscaIdStr);
                 } catch (NumberFormatException e) {
-                    Alertas.mostrarErro("O Id deve ser um número válido.");
+                    Alertas.mostrarErro("O id deve ser um número válido!");
                     txtExcluirIdAnimal.requestFocus();
                     return;
                 }
@@ -73,13 +76,13 @@ public class TabExcluirAnimalController {
                     a = animais.get(0);
                 }
             } else {
-                Alertas.mostrarAviso("Insira o Id ou o nome do animal para buscar");
+                Alertas.mostrarAviso("Insira o id ou o nome do animal para buscar!");
                 txtExcluirIdAnimal.requestFocus();
                 return;
             }
 
             if (a == null) {
-                Alertas.mostrarAviso("Nenhum animal encontrado");
+                Alertas.mostrarAviso("Nenhum animal encontrado!");
                 limparCampos();
                 return;
             }
@@ -99,15 +102,18 @@ public class TabExcluirAnimalController {
 
             Alertas.mostrarSucesso("Animal encontrado!");
 
-        } catch (ServiceException e) {
-            Alertas.mostrarErro("Erro ao buscar animal: " + e.getMessage());
+        } catch (IllegalArgumentException e){
+            Alertas.mostrarAviso(e.getMessage());
+        }
+        catch (ServiceException e) {
+            Alertas.mostrarErro(e.getMessage());
         }
     }
 
     @FXML
     void btnExcluirAnimalOnAction(ActionEvent event) {
         if (animalAtual == null) {
-            Alertas.mostrarAviso("Nenhum animal selecionado para excluir. Faça a busca primeiro.");
+            Alertas.mostrarAviso("Nenhum animal selecionado para excluir. Faça a busca primeiro!");
             return;
         }
 
@@ -119,13 +125,15 @@ public class TabExcluirAnimalController {
         Optional<ButtonType> resultado = confirmacao.showAndWait();
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             try {
-                animalService.excluirAnimal(animalAtual);
-
+                animalFacade.excluirAnimal(animalAtual);
                 Alertas.mostrarSucesso("Animal excluído com sucesso!");
                 limparCampos();
 
-            } catch (ServiceException e) {
-                Alertas.mostrarErro("Erro ao excluir animal: " + e.getMessage());
+            }catch (IllegalArgumentException e){
+                Alertas.mostrarAviso(e.getMessage());
+            }
+            catch (ServiceException e) {
+                Alertas.mostrarErro(e.getMessage());
             }
         }
     }

@@ -1,7 +1,9 @@
 package br.unicentro.poo.projetopoo.Controller.TabAtualizar;
 
 import br.unicentro.poo.projetopoo.Model.Veterinario;
+import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Service.VeterinarioService;
+import br.unicentro.poo.projetopoo.Service.ServiceFactory;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,7 +17,7 @@ import java.util.List;
 
 public class TabAtualizarVeterinarioController {
 
-    private final VeterinarioService veterinarioService = new VeterinarioService();
+    private final VeterinarioService veterinarioService = ServiceFactory.criarVeterinarioService();
 
     private Veterinario veterinarioAtual;
 
@@ -48,7 +50,7 @@ public class TabAtualizarVeterinarioController {
         String buscaCrmv = txtBuscarCrmvVeterinario.getText().trim();
 
         if (buscaCrmv.isEmpty()) {
-            Alertas.mostrarAviso("Insira o CRMV para buscar o veterinário");
+            Alertas.mostrarAviso("Insira o CRMV para buscar o veterinário!");
             txtBuscarCrmvVeterinario.requestFocus();
             return;
         }
@@ -76,15 +78,15 @@ public class TabAtualizarVeterinarioController {
 
             Alertas.mostrarSucesso("Veterinário encontrado!");
 
-        } catch (Exception e) {
-            Alertas.mostrarErro("Erro ao buscar veterinário: " + e.getMessage());
+        } catch (ServiceException e) {
+            Alertas.mostrarErro(e.getMessage());
         }
     }
 
     @FXML
     void btnSalvarVeterinarioOnAction(ActionEvent event) {
         if (veterinarioAtual == null) {
-            Alertas.mostrarAviso("Nenhum veterinário selecionado para atualizar. Faça a busca primeiro.");
+            Alertas.mostrarAviso("Nenhum veterinário selecionado para atualizar. Faça a busca primeiro!");
             return;
         }
 
@@ -115,8 +117,11 @@ public class TabAtualizarVeterinarioController {
             Alertas.mostrarSucesso("Veterinário atualizado com sucesso!");
             limparCampos();
 
-        } catch (Exception e) {
-            Alertas.mostrarErro("Erro ao atualizar veterinário: " + e.getMessage());
+        } catch (IllegalArgumentException e){
+            Alertas.mostrarAviso(e.getMessage());
+        }
+        catch (ServiceException e) {
+            Alertas.mostrarErro(e.getMessage());
         }
     }
 

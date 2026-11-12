@@ -24,6 +24,8 @@ public class VeterinarioService {
     }
 
     public void atualizarVeterinario(Veterinario veterinario) throws ServiceException{
+        validar(veterinario);
+
         if(veterinario.getCrmv() == null || veterinario.getCrmv().trim().isEmpty()){
             throw new IllegalArgumentException("Informe um CRMV válido!");
         }
@@ -68,26 +70,6 @@ public class VeterinarioService {
     public void validar(Veterinario veterinario){
         if(veterinario == null){
             throw new IllegalArgumentException("Veterinário inválido!");
-        }
-
-        if(veterinario.getCrmv() == null || veterinario.getCrmv().trim().isEmpty()){
-            throw new IllegalArgumentException("Informe o CRMV do veterinário!");
-        }
-
-        if(veterinario.getNome() == null || veterinario.getNome().trim().isBlank()){
-            throw new IllegalArgumentException("Informe o nome do veterinário!");
-        }
-
-        if(veterinario.getEspecializacao() == null || veterinario.getEspecializacao().trim().isEmpty()){
-            throw new IllegalArgumentException("Informe a especialização do veterinário!");
-        }
-
-        if(veterinario.getTelefone() == null || veterinario.getTelefone().trim().isEmpty()){
-            throw new IllegalArgumentException("Informe o telefone do veterinário!");
-        }
-
-        if(veterinario.getDataEntrada() == null){
-            throw new IllegalArgumentException("Informe a data de entrada do veterinário!");
         }
     }
 }

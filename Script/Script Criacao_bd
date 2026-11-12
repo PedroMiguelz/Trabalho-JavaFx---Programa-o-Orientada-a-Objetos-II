@@ -1,4 +1,4 @@
-CREATE DATABASE petshop_db
+CREATE DATABASE petshoppoo
 
 CREATE TABLE cliente (
     cpf CHAR(11) NOT NULL,

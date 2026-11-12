@@ -2,6 +2,7 @@ package br.unicentro.poo.projetopoo.Controller.TabExcluir;
 
 import br.unicentro.poo.projetopoo.Model.Consulta;
 import br.unicentro.poo.projetopoo.Service.ConsultaService;
+import br.unicentro.poo.projetopoo.Service.ServiceFactory;
 import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
@@ -16,7 +17,7 @@ import java.util.Optional;
 
 public class TabExcluirConsultaController {
 
-    private final ConsultaService consultaService = new ConsultaService();
+    private final ConsultaService consultaService = ServiceFactory.criarConsultaService();
 
     private Consulta consultaAtual;
 
@@ -49,7 +50,7 @@ public class TabExcluirConsultaController {
         String buscaIdStr = txtConsultarIdConsulta.getText().trim();
 
         if (buscaIdStr.isEmpty()) {
-            Alertas.mostrarAviso("Insira o ID da consulta para buscar");
+            Alertas.mostrarAviso("Insira o id da consulta para buscar!");
             txtConsultarIdConsulta.requestFocus();
             return;
         }
@@ -58,7 +59,7 @@ public class TabExcluirConsultaController {
         try {
             id = Integer.parseInt(buscaIdStr);
         } catch (NumberFormatException e) {
-            Alertas.mostrarErro("O ID deve ser um número inteiro válido.");
+            Alertas.mostrarErro("O id deve ser um número válido.");
             txtConsultarIdConsulta.requestFocus();
             return;
         }
@@ -67,7 +68,7 @@ public class TabExcluirConsultaController {
             consultaAtual = consultaService.listarConsulta(id).orElse(null);
 
             if (consultaAtual == null) {
-                Alertas.mostrarAviso("Nenhuma consulta encontrada com o ID: " + id);
+                Alertas.mostrarAviso("Nenhuma consulta encontrada com o id: " + id);
                 limparCampos();
                 return;
             }
@@ -93,7 +94,7 @@ public class TabExcluirConsultaController {
         } catch (IllegalArgumentException e) {
             Alertas.mostrarAviso(e.getMessage());
         } catch (ServiceException e) {
-            Alertas.mostrarErro("Erro ao buscar consulta: " + e.getMessage());
+            Alertas.mostrarErro(e.getMessage());
         }
     }
 
@@ -120,7 +121,7 @@ public class TabExcluirConsultaController {
             } catch (IllegalArgumentException e){
                 Alertas.mostrarAviso(e.getMessage());
             } catch (ServiceException e) {
-                Alertas.mostrarErro("Erro ao excluir consulta: " + e.getMessage());
+                Alertas.mostrarErro(e.getMessage());
             }
         }
     }

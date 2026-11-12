@@ -4,6 +4,7 @@ import br.unicentro.poo.projetopoo.Model.Animal;
 import br.unicentro.poo.projetopoo.Model.Consulta;
 import br.unicentro.poo.projetopoo.Model.Veterinario;
 import br.unicentro.poo.projetopoo.Service.ConsultaService;
+import br.unicentro.poo.projetopoo.Service.ServiceFactory;
 import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
@@ -12,11 +13,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import java.math.BigDecimal;
+import br.unicentro.poo.projetopoo.Facade.ConsultaFacade;
 
 
 public class TabAtualizarConsultaController {
 
-    private final ConsultaService consultaService = new ConsultaService();
+    private final ConsultaService consultaService = ServiceFactory.criarConsultaService();
+    private final ConsultaFacade consultaFacade = new ConsultaFacade();
 
     private Consulta consultaAtual;
 
@@ -49,7 +52,7 @@ public class TabAtualizarConsultaController {
         String buscaIdConsulta = txtBuscarIdConsulta.getText().trim();
 
         if(buscaIdConsulta.isEmpty()){
-            Alertas.mostrarAviso("Insira o ID da consulta");
+            Alertas.mostrarAviso("Insira o id da consulta");
             txtBuscarIdConsulta.requestFocus();
             return;
         }
@@ -58,7 +61,7 @@ public class TabAtualizarConsultaController {
         try {
             id = Integer.parseInt(buscaIdConsulta);
         } catch (NumberFormatException e) {
-            Alertas.mostrarErro("Informe um Id válido");
+            Alertas.mostrarErro("Informe um id válido");
             txtBuscarIdConsulta.requestFocus();
             return;
         }
@@ -81,15 +84,17 @@ public class TabAtualizarConsultaController {
 
             Alertas.mostrarSucesso("Consulta encontrada!");
 
-        } catch (Exception e) {
-            Alertas.mostrarErro("Erro ao buscar consulta: " + e.getMessage());
+        } catch (IllegalArgumentException e){
+            Alertas.mostrarAviso(e.getMessage());
+        } catch (ServiceException e) {
+            Alertas.mostrarErro(e.getMessage());
         }
     }
 
     @FXML
     void btnSalvarConsultaOnAction(ActionEvent event) {
         if (consultaAtual == null) {
-            Alertas.mostrarAviso("Nenhuma consulta selecionada para atualizar. Faça a busca primeiro.");
+            Alertas.mostrarAviso("Nenhuma consulta selecionada para atualizar. Faça a busca primeiro!");
             return;
         }
 
@@ -99,6 +104,12 @@ public class TabAtualizarConsultaController {
             String valorStr = txtAtualizarValorConsulta.getText().trim();
             String idAnimalStr = txtAtualizarIdAnimal.getText().trim();
             String crmvVet = txtAtualizarCrmvConsulta.getText().trim();
+
+            if (crmvVet.isEmpty()) {
+                Alertas.mostrarAviso("Informe o CRMV do veterinário!");
+                txtAtualizarCrmvConsulta.requestFocus();
+                return;
+            }
 
             BigDecimal valor;
             try {
@@ -116,28 +127,22 @@ public class TabAtualizarConsultaController {
                 return;
             }
 
-            Animal animal = new Animal();
-            animal.setId(idAnimal);
+            Consulta consulta = Consulta.builder()
+                    .id(idConsulta)
+                    .data(data)
+                    .valor(valor)
+                    .animal(Animal.builder().id(idAnimal).build())
+                    .veterinario(Veterinario.builder().crmv(crmvVet).build())
+                    .build();
 
-            Veterinario veterinario = new Veterinario();
-            veterinario.setCrmv(crmvVet);
-
-            Consulta consulta = new Consulta();
-            consulta.setId(idConsulta);
-            consulta.setData(data);
-            consulta.setValor(valor);
-            consulta.setAnimal(animal);
-            consulta.setVeterinario(veterinario);
-
-            consultaService.atualizarConsulta(consulta);
-
+            consultaFacade.atualizarConsulta(consulta);
             Alertas.mostrarSucesso("Consulta atualizada com sucesso!");
             limparCampos();
 
         } catch (IllegalArgumentException e){
             Alertas.mostrarAviso(e.getMessage());
         } catch (ServiceException e) {
-            Alertas.mostrarErro("Erro ao atualizar consulta: " + e.getMessage());
+            Alertas.mostrarErro(e.getMessage());
         }
     }
 

@@ -3,16 +3,20 @@ package br.unicentro.poo.projetopoo.Controller.TabCadastro;
 import br.unicentro.poo.projetopoo.Model.Animal;
 import br.unicentro.poo.projetopoo.Model.Cliente;
 import br.unicentro.poo.projetopoo.Service.AnimalService;
+import br.unicentro.poo.projetopoo.Service.ServiceFactory;
 import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Util.Alertas;
+import br.unicentro.poo.projetopoo.Util.ValidadorUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import br.unicentro.poo.projetopoo.Facade.AnimalFacade;
 
 
 public class TabCadastroAnimalController {
 
-    private final AnimalService animalService = new AnimalService();
+    private final AnimalService animalService = ServiceFactory.criarAnimalService();
+    private final AnimalFacade animalFacade = new AnimalFacade();
 
     @FXML
     private Button btnAceitarAnimal;
@@ -46,53 +50,60 @@ public class TabCadastroAnimalController {
         String cpfDono = txtCpfClienteAnimal.getText();
 
         if(nome.isEmpty()){
-            Alertas.mostrarAviso("Insira o nome do animal");
+            Alertas.mostrarAviso("Insira o nome do animal!");
             txtNomeAnimal.requestFocus();
             return;
         }
 
         if(raca.isEmpty()){
-            Alertas.mostrarAviso("Insira a raca do animal");
+            Alertas.mostrarAviso("Insira a raça do animal!");
             txtRacaAnimal.requestFocus();
             return;
         }
 
         if(sexo == null || sexo.isEmpty()){
-            Alertas.mostrarAviso("Selecione o sexo do animal");
+            Alertas.mostrarAviso("Selecione o sexo do animal!");
             cbSexo.requestFocus();
             return;
         }
 
         if(especie.isEmpty()){
-            Alertas.mostrarAviso("Insira a espécie do animal");
+            Alertas.mostrarAviso("Insira a espécie do animal!");
             txtEspecieAnimal.requestFocus();
             return;
         }
 
         if(cpfDono.isEmpty()){
-            Alertas.mostrarAviso("Insira o cpf do dono do animal");
+            Alertas.mostrarAviso("Insira o CPF do dono do animal!");
             txtCpfClienteAnimal.requestFocus();
             return;
         }
 
-        Cliente cliente = new Cliente();
-        cliente.setCpf(cpfDono);
+        if(!ValidadorUtil.isCpfValido(cpfDono)){
+            Alertas.mostrarAviso("Digite um CPF válido!");
+            txtCpfClienteAnimal.requestFocus();
+            return;
+        }
 
-        Animal animal = new Animal();
-        animal.setNome(nome);
-        animal.setRaca(raca);
-        animal.setSexo(sexo);
-        animal.setEspecie(especie);
-        animal.setCliente(cliente);
+
+        Animal animal = Animal.builder()
+                .nome(nome)
+                .raca(raca)
+                .sexo(sexo)
+                .especie(especie)
+                .cliente(Cliente.builder().cpf(cpfDono).build())
+                .build();
 
         try{
-            animalService.cadastrarAnimal(animal);
-
+            animalFacade.cadastrarAnimal(animal);
             Alertas.mostrarSucesso("Sucesso ao cadastrar o animal");
 
             limparCampos();
 
-        } catch (ServiceException e) {
+        } catch (IllegalArgumentException e){
+            Alertas.mostrarAviso(e.getMessage());
+        }
+        catch (ServiceException e) {
             Alertas.mostrarErro(e.getMessage());
         }
     }

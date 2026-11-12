@@ -2,21 +2,25 @@ package br.unicentro.poo.projetopoo.Controller.TabExcluir;
 
 import br.unicentro.poo.projetopoo.Model.Cliente;
 import br.unicentro.poo.projetopoo.Service.ClienteService;
+import br.unicentro.poo.projetopoo.Service.ServiceFactory;
 import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Util.Alertas;
+import br.unicentro.poo.projetopoo.Util.ValidadorUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
+import br.unicentro.poo.projetopoo.Facade.ClienteFacade;
 
 import java.util.List;
 import java.util.Optional;
 
 public class TabExcluirClienteController {
 
-    private final ClienteService clienteService = new ClienteService();
+    private final ClienteService clienteService = ServiceFactory.criarClienteService();
+    private final ClienteFacade clienteFacade = new ClienteFacade();
     private Cliente clienteAtual;
 
     @FXML
@@ -45,13 +49,20 @@ public class TabExcluirClienteController {
         String buscaCpf = txtBuscarCpfCliente.getText().trim();
         String buscaNome = txtBuscarNomeCliente.getText().trim();
 
-        String termoBusca = !buscaCpf.isEmpty() ? buscaCpf : buscaNome;
 
-        if (termoBusca.isEmpty()) {
-            Alertas.mostrarAviso("Insira o CPF ou o Nome para buscar o cliente");
+        if (buscaCpf.isEmpty() && buscaNome.isEmpty()) {
+            Alertas.mostrarAviso("Insira o CPF ou o Nome para buscar o cliente!");
             txtBuscarCpfCliente.requestFocus();
             return;
         }
+
+        if (!buscaCpf.isEmpty() && !ValidadorUtil.isCpfValido(buscaCpf)) {
+            Alertas.mostrarAviso("Digite um CPF válido!");
+            txtBuscarCpfCliente.requestFocus();
+            return;
+        }
+
+        String termoBusca = !buscaCpf.isEmpty() ? buscaCpf : buscaNome;
 
         try {
             List<Cliente> clientes = clienteService.listarCliente(termoBusca);
@@ -76,7 +87,7 @@ public class TabExcluirClienteController {
             Alertas.mostrarSucesso("Cliente encontrado!");
 
         } catch (ServiceException e) {
-            Alertas.mostrarErro("Erro ao buscar cliente: " + e.getMessage());
+            Alertas.mostrarErro(e.getMessage());
         }
     }
 
@@ -95,15 +106,15 @@ public class TabExcluirClienteController {
         Optional<ButtonType> resultado = confirmacao.showAndWait();
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             try {
-                clienteService.excluirCliente(clienteAtual);
-
+                clienteFacade.excluirCliente(clienteAtual);
                 Alertas.mostrarSucesso("Cliente excluído com sucesso!");
                 limparCampos();
 
-            } catch (ServiceException e) {
-                Alertas.mostrarErro("Erro ao excluir cliente: " + e.getMessage());
             } catch (IllegalArgumentException e) {
                 Alertas.mostrarAviso(e.getMessage());
+            }
+            catch (ServiceException e) {
+                Alertas.mostrarErro(e.getMessage());
             }
         }
     }

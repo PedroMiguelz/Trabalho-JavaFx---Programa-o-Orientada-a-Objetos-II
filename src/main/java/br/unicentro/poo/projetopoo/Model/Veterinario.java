@@ -28,4 +28,31 @@ public class Veterinario {
 
     @Override
     public String toString() { return nome; }
+
+    public static Builder builder() { return new Builder(); }
+
+    public static class Builder {
+        private String crmv, nome, especializacao, telefone;
+        private LocalDate dataEntrada;
+
+        public Builder crmv(String crmv) { this.crmv = crmv; return this; }
+
+        public Builder nome(String nome) { this.nome = nome; return this; }
+
+        public Builder especializacao(String especializacao) { this.especializacao = especializacao; return this; }
+
+        public Builder telefone(String telefone) { this.telefone = telefone; return this; }
+
+        public Builder dataEntrada(LocalDate dataEntrada) { this.dataEntrada = dataEntrada; return this; }
+
+        public Veterinario build() {
+            Veterinario v = new Veterinario();
+            v.crmv = crmv;
+            v.nome = nome;
+            v.especializacao = especializacao;
+            v.telefone = telefone;
+            v.dataEntrada = dataEntrada;
+            return v;
+        }
+    }
 }

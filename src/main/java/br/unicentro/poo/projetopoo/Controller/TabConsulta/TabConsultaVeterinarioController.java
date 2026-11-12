@@ -1,7 +1,9 @@
 package br.unicentro.poo.projetopoo.Controller.TabConsulta;
 
 import br.unicentro.poo.projetopoo.Model.Veterinario;
+import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Service.VeterinarioService;
+import br.unicentro.poo.projetopoo.Service.ServiceFactory;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,7 +15,7 @@ import java.util.List;
 
 public class TabConsultaVeterinarioController {
 
-    private final VeterinarioService veterinarioService = new VeterinarioService();
+    private final VeterinarioService veterinarioService = ServiceFactory.criarVeterinarioService();
     @FXML
     private Button btnConsultarVeterinario;
 
@@ -84,9 +86,12 @@ public class TabConsultaVeterinarioController {
 
             Alertas.mostrarSucesso("Veterinário encontrado!");
 
-        } catch (Exception e) {
-            Alertas.mostrarErro("Erro ao consultar veterinário: " + e.getMessage());
+        } catch (IllegalArgumentException e){
+            Alertas.mostrarAviso(e.getMessage());
         }
+         catch (ServiceException e){
+            Alertas.mostrarErro(e.getMessage());
+         }
     }
 
         @FXML

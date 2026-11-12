@@ -21,7 +21,7 @@ public class ConsultaDao {
             //nao aceita localData
             ps.setObject(1, c.getData());
             ps.setBigDecimal(2, c.getValor());
-            ps.setInt(3,c.getAnimal().getId());
+            ps.setInt(3, c.getAnimal().getId());
             ps.setString(4, c.getVeterinario().getCrmv());
             ps.executeUpdate();
         }
@@ -51,20 +51,13 @@ public class ConsultaDao {
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Consulta c = new Consulta();
-                    c.setId(rs.getInt("idConsulta"));
-                    c.setData(rs.getObject("data", LocalDate.class));
-                    c.setValor(rs.getBigDecimal("valor"));
-
-                    Animal animal = new Animal();
-                    animal.setId(rs.getInt("idAnimal"));
-                    animal.setNome(rs.getString("nome_animal"));
-                    c.setAnimal(animal);
-
-                    Veterinario vet = new Veterinario();
-                    vet.setCrmv(rs.getString("crmv"));
-                    vet.setNome(rs.getString("nome_vet"));
-                    c.setVeterinario(vet);
+                    Consulta c = Consulta.builder()
+                            .id(rs.getInt("idConsulta"))
+                            .data(rs.getObject("data", LocalDate.class))
+                            .valor(rs.getBigDecimal("valor"))
+                            .animal(Animal.builder().id(rs.getInt("idAnimal")).nome(rs.getString("nome_animal")).build())
+                            .veterinario(Veterinario.builder().crmv(rs.getString("crmv")).nome(rs.getString("nome_vet")).build())
+                            .build();
 
                     lista.add(c);
                 }
@@ -107,6 +100,27 @@ public class ConsultaDao {
         }
     }
 
+    public int contarPorVeterinario(String crmv) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM consulta WHERE crmv_veterinario = ?";
+        try (Connection con = Conexao.getConexao(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, crmv);
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                return rs.getInt(1);
+            }
+        }
+    }
 
+    /*eyshla*/
+    public int contarPorAnimal(int idAnimal) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM consulta WHERE idAnimal = ?";
+        try (Connection con = Conexao.getConexao(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idAnimal);
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                return rs.getInt(1);
+            }
+        }
+    }
 
 }

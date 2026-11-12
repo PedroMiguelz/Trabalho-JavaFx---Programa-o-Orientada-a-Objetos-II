@@ -2,6 +2,7 @@ package br.unicentro.poo.projetopoo.Controller.TabConsulta;
 
 import br.unicentro.poo.projetopoo.Model.Consulta;
 import br.unicentro.poo.projetopoo.Service.ConsultaService;
+import br.unicentro.poo.projetopoo.Service.ServiceFactory;
 import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
@@ -22,7 +23,7 @@ import java.util.Locale;
 
 public class TabConsultaConsultaController {
 
-    private final ConsultaService consultaService = new ConsultaService();
+    private final ConsultaService consultaService = ServiceFactory.criarConsultaService();
     @FXML
     private Button btnConsultarConsulta;
 
@@ -64,7 +65,7 @@ public class TabConsultaConsultaController {
         String buscaIdConsulta = txtConsultarIdConsulta.getText().trim();
 
         if (buscaIdConsulta.isEmpty()) {
-            Alertas.mostrarAviso("Insira o ID da consulta!");
+            Alertas.mostrarAviso("Insira o Id da consulta!");
             txtConsultarIdConsulta.requestFocus();
             return;
         }
@@ -73,7 +74,7 @@ public class TabConsultaConsultaController {
         try {
             id = Integer.parseInt(buscaIdConsulta);
         } catch (NumberFormatException e) {
-            Alertas.mostrarAviso("Informe um ID válido!");
+            Alertas.mostrarAviso("Informe um Id válido!");
             txtConsultarIdConsulta.requestFocus();
             return;
         }
@@ -98,7 +99,7 @@ public class TabConsultaConsultaController {
         } catch (IllegalArgumentException e) {
             Alertas.mostrarAviso("Id da consulta inválido!");
         } catch (ServiceException e){
-            Alertas.mostrarErro("Erro ao consultar a consulta: " + e.getMessage());
+            Alertas.mostrarErro(e.getMessage());
         }
     }
 
@@ -196,7 +197,7 @@ public class TabConsultaConsultaController {
         } catch (IllegalArgumentException e) {
             Alertas.mostrarAviso(e.getMessage());
         } catch (ServiceException e) {
-            Alertas.mostrarErro("Erro ao calcular faturamento: " + e.getMessage());
+            Alertas.mostrarErro(e.getMessage());
         }
     }
 

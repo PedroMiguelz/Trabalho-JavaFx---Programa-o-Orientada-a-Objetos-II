@@ -2,8 +2,10 @@ package br.unicentro.poo.projetopoo.Controller.TabCadastro;
 
 import br.unicentro.poo.projetopoo.Model.Veterinario;
 import br.unicentro.poo.projetopoo.Service.ServiceException;
+import br.unicentro.poo.projetopoo.Service.ServiceFactory;
 import br.unicentro.poo.projetopoo.Service.VeterinarioService;
 import br.unicentro.poo.projetopoo.Util.Alertas;
+import br.unicentro.poo.projetopoo.Util.ValidadorUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -14,7 +16,7 @@ import java.time.LocalDate;
 
 public class TabCadastroVeterinarioController {
 
-    private final VeterinarioService veterinarioService = new VeterinarioService();
+    private final VeterinarioService veterinarioService = ServiceFactory.criarVeterinarioService();
 
     @FXML
     private Button btnAceitarVeterinario;
@@ -46,51 +48,62 @@ public class TabCadastroVeterinarioController {
         LocalDate dataEntrada = dpDataEntradaVeterinario.getValue();
 
         if(nome.isEmpty()){
-            Alertas.mostrarAviso("Informe o nome do veterinário");
+            Alertas.mostrarAviso("Informe o nome do veterinário!");
             txtNomeVeterinario.requestFocus();
             return;
         }
 
         if(crmv.isEmpty()){
-            Alertas.mostrarAviso("Informe o crmv do veterinário");
+            Alertas.mostrarAviso("Informe o CRMV do veterinário!");
             txtCrmvVeterinario.requestFocus();
             return;
         }
 
         if(especializacao.isEmpty()){
-            Alertas.mostrarAviso("Informe a especialização do veterinário");
+            Alertas.mostrarAviso("Informe a especialização do veterinário!");
             txtEspecializacaoVeterinario.requestFocus();
             return;
         }
 
         if(telefone.isEmpty()){
-            Alertas.mostrarAviso("Informe o telefone do veterinário");
+            Alertas.mostrarAviso("Informe o telefone do veterinário!");
+            txtTelefoneVeterinario.requestFocus();
+            return;
+        }
+
+        if(!ValidadorUtil.isTelefoneValido(telefone)){
+            Alertas.mostrarAviso("Digite um telefone válido!");
             txtTelefoneVeterinario.requestFocus();
             return;
         }
 
         if(dataEntrada == null){
-            Alertas.mostrarAviso("Informe a data de entrada do veterinário");
+            Alertas.mostrarAviso("Informe a data de entrada do veterinário!");
             dpDataEntradaVeterinario.requestFocus();
             return;
         }
 
-        Veterinario veterinario = new Veterinario();
-        veterinario.setNome(nome);
-        veterinario.setCrmv(crmv);
-        veterinario.setEspecializacao(especializacao);
-        veterinario.setTelefone(telefone);
-        veterinario.setDataEntrada(dataEntrada);
+        Veterinario veterinario = Veterinario.builder()
+                .nome(nome)
+                .crmv(crmv)
+                .especializacao(especializacao)
+                .telefone(telefone)
+                .dataEntrada(dataEntrada)
+                .build();
 
         try{
             veterinarioService.cadastrarVeterinario(veterinario);
 
             Alertas.mostrarSucesso("Sucesso ao cadastrar veterinário");
 
+            limparCampos();
 
 
-        } catch (ServiceException e) {
-            Alertas.mostrarErro("Erro ao cadastrar veterinário: " + e.getMessage());
+        } catch (IllegalArgumentException e){
+            Alertas.mostrarAviso(e.getMessage());
+        }
+        catch (ServiceException e) {
+            Alertas.mostrarErro(e.getMessage());
         }
     }
 

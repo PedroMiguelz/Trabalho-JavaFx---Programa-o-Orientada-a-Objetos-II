@@ -27,13 +27,14 @@ public class VeterinarioDao {
             ps.setString(2, "%" + busca + "%");
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Veterinario v = new Veterinario();
-                    v.setCrmv(rs.getString("crmv"));
-                    v.setNome(rs.getString("nome"));
-                    v.setDataEntrada(rs.getDate("dataEntrada").toLocalDate());
-                    v.setEspecializacao(rs.getString("especializacao"));
                     String tel = rs.getString("telefone");
-                    v.setTelefone(tel == null ? null : tel.trim());
+                    Veterinario v = Veterinario.builder()
+                            .crmv(rs.getString("crmv"))
+                            .nome(rs.getString("nome"))
+                            .dataEntrada(rs.getDate("dataEntrada").toLocalDate())
+                            .especializacao(rs.getString("especializacao"))
+                            .telefone(tel == null ? null : tel.trim())
+                            .build();
                     lista.add(v);
                 }
             }

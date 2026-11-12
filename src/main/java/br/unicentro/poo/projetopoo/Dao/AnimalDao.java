@@ -31,17 +31,14 @@ public class  AnimalDao {
             ps.setString(1, "%" + busca + "%");
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Cliente c = new Cliente();
-                    c.setCpf(rs.getString("cpf"));
-                    c.setNome(rs.getString("cnome"));
-
-                    Animal a = new Animal();
-                    a.setId(rs.getInt("idAnimal"));
-                    a.setNome(rs.getString("nome"));
-                    a.setEspecie(rs.getString("especie"));
-                    a.setRaca(rs.getString("raca"));
-                    a.setSexo(rs.getString("sexo"));
-                    a.setCliente(c);
+                    Animal a = Animal.builder()
+                            .id(rs.getInt("idAnimal"))
+                            .nome(rs.getString("nome"))
+                            .especie(rs.getString("especie"))
+                            .raca(rs.getString("raca"))
+                            .sexo(rs.getString("sexo"))
+                            .cliente(Cliente.builder().cpf(rs.getString("cpf")).nome(rs.getString("cnome")).build())
+                            .build();
                     lista.add(a);
                 }
             }
@@ -59,17 +56,14 @@ public class  AnimalDao {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    Cliente c = new Cliente();
-                    c.setCpf(rs.getString("cpf"));
-                    c.setNome(rs.getString("cnome"));
-
-                    Animal a = new Animal();
-                    a.setId(rs.getInt("idAnimal"));
-                    a.setNome(rs.getString("nome"));
-                    a.setEspecie(rs.getString("especie"));
-                    a.setRaca(rs.getString("raca"));
-                    a.setSexo(rs.getString("sexo"));
-                    a.setCliente(c);
+                    Animal a = Animal.builder()
+                            .id(rs.getInt("idAnimal"))
+                            .nome(rs.getString("nome"))
+                            .especie(rs.getString("especie"))
+                            .raca(rs.getString("raca"))
+                            .sexo(rs.getString("sexo"))
+                            .cliente(Cliente.builder().cpf(rs.getString("cpf")).nome(rs.getString("cnome")).build())
+                            .build();
                     return a;
                 }
             }
@@ -95,6 +89,18 @@ public class  AnimalDao {
              PreparedStatement ps = con.prepareStatement("DELETE FROM animal WHERE idAnimal = ?")) {
             ps.setInt(1, id);
             ps.executeUpdate();
+        }
+    }
+
+    /*eyshla*/
+    public int contarPorCliente(String cpf) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM animal WHERE cpf_cliente = ?";
+        try (Connection con = Conexao.getConexao(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, cpf);
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                return rs.getInt(1);
+            }
         }
     }
 }

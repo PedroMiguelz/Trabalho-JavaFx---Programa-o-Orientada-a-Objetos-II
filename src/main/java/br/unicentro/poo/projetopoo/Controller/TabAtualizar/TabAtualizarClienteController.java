@@ -2,8 +2,10 @@ package br.unicentro.poo.projetopoo.Controller.TabAtualizar;
 
 import br.unicentro.poo.projetopoo.Model.Cliente;
 import br.unicentro.poo.projetopoo.Service.ClienteService;
+import br.unicentro.poo.projetopoo.Service.ServiceFactory;
 import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Util.Alertas;
+import br.unicentro.poo.projetopoo.Util.ValidadorUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -13,7 +15,7 @@ import java.util.List;
 
 public class TabAtualizarClienteController {
 
-    private final ClienteService clienteService = new ClienteService();
+    private final ClienteService clienteService = ServiceFactory.criarClienteService();
 
     private Cliente clienteAtual;
     @FXML
@@ -39,7 +41,14 @@ public class TabAtualizarClienteController {
         String termoBusca = txtBuscarCpfCliente.getText().trim();
 
         if (termoBusca.isEmpty()) {
-            Alertas.mostrarAviso("Digite um CPF.");
+            Alertas.mostrarAviso("Digite um CPF!");
+            txtBuscarCpfCliente.requestFocus();
+            return;
+        }
+
+        if (!ValidadorUtil.isCpfValido(termoBusca)) {
+            Alertas.mostrarAviso("Digite um CPF válido!");
+            txtBuscarCpfCliente.requestFocus();
             return;
         }
 
@@ -61,7 +70,7 @@ public class TabAtualizarClienteController {
             Alertas.mostrarSucesso("Cliente encontrado!");
 
         } catch (ServiceException e) {
-            Alertas.mostrarErro("Erro ao buscar cliente: " + e.getMessage());
+            Alertas.mostrarErro(e.getMessage());
         }
     }
 
@@ -71,14 +80,26 @@ public class TabAtualizarClienteController {
         String nome = txtAtualizarNomeCliente.getText().trim();
         String telefone = txtAtualizarTelefoneCliente.getText().trim();
 
-        if (cpf.isEmpty()) {
-            Alertas.mostrarAviso("Nenhum cliente selecionado para atualizar. Faça a busca primeiro.");
+        if(clienteAtual == null){
+            Alertas.mostrarAviso("Nenhum cliente selecionado para atualizar. Faça a busca primeiro!");
             return;
         }
 
         if (nome.isEmpty()) {
-            Alertas.mostrarAviso("O nome não pode estar vazio.");
+            Alertas.mostrarAviso("O nome não pode estar vazio!");
             txtAtualizarNomeCliente.requestFocus();
+            return;
+        }
+
+        if (telefone.isEmpty()) {
+            Alertas.mostrarAviso("O telefone não pode estar vazio!");
+            txtAtualizarTelefoneCliente.requestFocus();
+            return;
+        }
+
+        if (!ValidadorUtil.isTelefoneValido(telefone)) {
+            Alertas.mostrarAviso("Digite um telefone válido!");
+            txtAtualizarTelefoneCliente.requestFocus();
             return;
         }
 
@@ -93,8 +114,11 @@ public class TabAtualizarClienteController {
 
             limparCampos();
 
-        } catch (ServiceException e) {
-            Alertas.mostrarErro("Erro ao atualizar cliente: " + e.getMessage());
+        } catch (IllegalArgumentException e){
+            Alertas.mostrarAviso(e.getMessage());
+        }
+        catch (ServiceException e) {
+            Alertas.mostrarErro(e.getMessage());
         }
     }
 

@@ -2,6 +2,8 @@ package br.unicentro.poo.projetopoo.Controller.TabConsulta;
 
 import br.unicentro.poo.projetopoo.Model.Animal;
 import br.unicentro.poo.projetopoo.Service.AnimalService;
+import br.unicentro.poo.projetopoo.Service.ServiceException;
+import br.unicentro.poo.projetopoo.Service.ServiceFactory;
 import br.unicentro.poo.projetopoo.Util.Alertas;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,7 +14,7 @@ import java.util.List;
 
 public class TabConsultaAnimalController {
 
-    private final AnimalService animalService = new AnimalService();
+    private final AnimalService animalService = ServiceFactory.criarAnimalService();
 
     @FXML
     private Button btnLimparAnimal;
@@ -58,7 +60,7 @@ public class TabConsultaAnimalController {
                 try {
                     id = Integer.parseInt(buscaId);
                 } catch (NumberFormatException e) {
-                    Alertas.mostrarErro("O ID deve ser um número inteiro válido.");
+                    Alertas.mostrarErro("O Id deve ser um número inteiro válido.");
                     return;
                 }
                 a = animalService.listarAnimalId(id);
@@ -70,7 +72,7 @@ public class TabConsultaAnimalController {
                 }
             }
             else {
-                Alertas.mostrarAviso("Insira o ID ou o Nome do animal para consultar");
+                Alertas.mostrarAviso("Insira o Id ou o Nome do animal para consultar");
                 return;
             }
 
@@ -94,8 +96,11 @@ public class TabConsultaAnimalController {
 
             Alertas.mostrarSucesso("Animal encontrado!");
 
-        } catch (Exception e) {
-            Alertas.mostrarErro("Erro ao consultar animal: " + e.getMessage());
+        } catch (IllegalArgumentException e){
+            Alertas.mostrarAviso(e.getMessage());
+        }
+        catch (ServiceException e) {
+            Alertas.mostrarErro(e.getMessage());
         }
     }
 

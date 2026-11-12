@@ -3,13 +3,16 @@ package br.unicentro.poo.projetopoo.Controller.TabAtualizar;
 import br.unicentro.poo.projetopoo.Model.Animal;
 import br.unicentro.poo.projetopoo.Model.Cliente;
 import br.unicentro.poo.projetopoo.Service.AnimalService;
+import br.unicentro.poo.projetopoo.Service.ServiceFactory;
 import br.unicentro.poo.projetopoo.Service.ServiceException;
 import br.unicentro.poo.projetopoo.Util.Alertas;
+import br.unicentro.poo.projetopoo.Util.ValidadorUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import br.unicentro.poo.projetopoo.Facade.AnimalFacade;
 
 import java.util.List;
 
@@ -17,7 +20,9 @@ public class TabAtualizarAnimalController {
 
     private Animal animal;
 
-    private final AnimalService animalService = new AnimalService();
+    private final AnimalService animalService = ServiceFactory.criarAnimalService();
+    private final AnimalFacade animalFacade = new AnimalFacade();
+
 
     @FXML
     private Button btnBuscarAnimal;
@@ -67,9 +72,8 @@ public class TabAtualizarAnimalController {
 
                 Animal a = animalService.listarAnimalId(id);
 
-                if(a == null){
-                    Alertas.mostrarAviso("Nenhum animal encontrado");
-                    limparCampos();
+                if(animal == null){
+                    Alertas.mostrarAviso( "Nenhum animal selecionado para atualizar. Faça a busca primeiro!");
                     return;
                 }
 
@@ -91,11 +95,14 @@ public class TabAtualizarAnimalController {
                 preencherCampos(a);
             }
             else {
-                Alertas.mostrarAviso("Insira o id ou nome do animal");
+                Alertas.mostrarAviso("Insira o id ou nome do animal!");
             }
 
-        } catch (ServiceException e) {
-            Alertas.mostrarErro("Erro ao buscar animal: " + e.getMessage());
+        } catch (IllegalArgumentException e){
+            Alertas.mostrarAviso(e.getMessage());
+        }
+        catch (ServiceException e) {
+            Alertas.mostrarErro(e.getMessage());
         }
     }
 
@@ -108,29 +115,42 @@ public class TabAtualizarAnimalController {
         String cpfCliente = txtAtualizarClienteAnimal.getText().trim();
 
         if(animal == null){
-            Alertas.mostrarAviso( "Nenhum animal selecionado para atualizar. Faça a busca primeiro.");
+            Alertas.mostrarAviso( "Nenhum animal selecionado para atualizar. Faça a busca primeiro!");
             return;
         }
 
-        Cliente cliente = new Cliente();
-        cliente.setCpf(cpfCliente);
+        if(cpfCliente.isEmpty()){
+            Alertas.mostrarAviso("Insira o CPF do dono do animal!");
+            txtAtualizarClienteAnimal.requestFocus();
+            return;
+        }
 
-        Animal animalAtualizado = new Animal();
-        animalAtualizado.setNome(nome);
-        animalAtualizado.setEspecie(especie);
-        animalAtualizado.setRaca(raca);
-        animalAtualizado.setSexo(sexo);
-        animalAtualizado.setCliente(cliente);
+        if(!ValidadorUtil.isCpfValido(cpfCliente)){
+            Alertas.mostrarAviso("Digite um CPF válido!");
+            txtAtualizarClienteAnimal.requestFocus();
+            return;
+        }
+
+        Animal animalAtualizado = Animal.builder()
+                .id(animal.getId())
+                .nome(nome)
+                .especie(especie)
+                .raca(raca)
+                .sexo(sexo)
+                .cliente(Cliente.builder().cpf(cpfCliente).build())
+                .build();
 
         try{
-           animalService.atualizarAnimal(animalAtualizado);
-
+            animalFacade.atualizarAnimal(animalAtualizado);
             Alertas.mostrarSucesso("Animal atualizado com sucesso!");
             limparCampos();
 
 
-        } catch (ServiceException e) {
-            Alertas.mostrarErro("Erro ao atualizar animal: " + e.getMessage());
+        } catch (IllegalArgumentException e){
+            Alertas.mostrarAviso(e.getMessage());
+        }
+        catch (ServiceException e) {
+            Alertas.mostrarErro(e.getMessage());
         }
     }
 

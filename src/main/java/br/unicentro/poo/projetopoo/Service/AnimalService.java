@@ -25,11 +25,11 @@ public class AnimalService {
     }
 
     public void atualizarAnimal(Animal animal) throws ServiceException {
+        validar(animal);
+
         if(animal.getId() <= 0){
             throw new IllegalArgumentException("Id do animal deve ser um número válido");
         }
-
-        validar(animal);
 
         try {
             animalDao.atualizar(animal);
@@ -63,11 +63,9 @@ public class AnimalService {
     }
 
     public void excluirAnimal(Animal animal) throws ServiceException {
-        if(animal.getId() <= 0){
+        if(animal == null || animal.getId() <= 0){
             throw new IllegalArgumentException("Id do animal deve ser um número válido");
         }
-
-        validar(animal);
 
         try {
             animalDao.excluir(animal.getId());
@@ -82,25 +80,17 @@ public class AnimalService {
             throw new IllegalArgumentException("Animal invalida!");
         }
 
-        if(animal.getNome() == null){
-            throw new IllegalArgumentException("Informe o nome do animal!");
+        if(animal.getCliente().getCpf() == null){
+            throw new IllegalArgumentException("Informe o cpf do cliente dono do animal!");
         }
+    }
 
-        if(animal.getCliente() == null){
-            throw new IllegalArgumentException("Informe o nome do cliente dono do animal!");
+    /*eyshlaaa*/
+    public int contarPorCliente(String cpf) throws ServiceException {
+        try {
+            return animalDao.contarPorCliente(cpf);
+        } catch (SQLException e) {
+            throw new ServiceException("Erro ao verificar animais do cliente!", e);
         }
-
-        if(animal.getSexo() == null){
-            throw new IllegalArgumentException("Informe o sexo do animal!");
-        }
-
-        if(animal.getEspecie() == null){
-            throw new IllegalArgumentException("Informe a espécie do animal");
-        }
-
-        if(animal.getRaca() == null){
-            throw new IllegalArgumentException("Informe a raça do animal!");
-        }
-
     }
 }
